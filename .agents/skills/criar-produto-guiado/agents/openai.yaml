@@ -1,0 +1,14 @@
+interface:
+  display_name: Criar Produto Guiado
+  short_description: Da ideia ao lançamento, para site ou SaaS
+  default_prompt: Use $criar-produto-guiado para me acompanhar da ideia até a publicação
+    do meu site ou SaaS.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

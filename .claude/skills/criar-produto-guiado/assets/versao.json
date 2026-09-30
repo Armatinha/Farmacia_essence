@@ -1,0 +1,11 @@
+{
+  "version": "1.1.0",
+  "released_at": "2026-09-29",
+  "title": "Cinco guias de produto e distribuição privada",
+  "changes": [
+    "Adiciona APP_FLOW.md, TRD.md, IMPLEMENTATION_PLAN.md e TESTING.md",
+    "Valida o conteúdo obrigatório antes de concluir as etapas",
+    "Exibe os novos documentos no painel estilizado",
+    "Inclui atualização com cópia de segurança para a turma privada"
+  ]
+}

@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@import "tailwindcss";
+
+@theme {
+  --color-veltrix-dark-1: #151721;
+  --color-veltrix-dark-2: #171923;
+  --color-veltrix-dark-3: #171820;
+  --color-veltrix-dark-4: #353741;
+
+  --color-veltrix-light-1: #f8f5ee;
+  --color-veltrix-light-2: #ebe6dc;
+  --color-veltrix-light-3: #fbf9f4;
+  --color-veltrix-light-4: #e9e5dc;
+  --color-veltrix-light-5: #f7f3e9;
+
+  --color-veltrix-gold-1: #b58a34;
+  --color-veltrix-gold-2: #a77e2e;
+  --color-veltrix-gold-3: #c29a48;
+  --color-veltrix-gold-4: #bd984d;
+  --color-veltrix-gold-5: #8b6b2f;
+
+  --color-veltrix-text-dark: #555652;
+  --color-veltrix-text-darker: #2d291f;
+  --color-veltrix-text-gray: #62615c;
+  --color-veltrix-text-light: #eee9dd;
+  --color-veltrix-text-muted: #aaa79f;
+
+  --color-veltrix-border-1: #d9d2c3;
+  --color-veltrix-border-2: #ddd5c7;
+  --color-veltrix-border-3: #ded7ca;
+
+  /* Replacing old primary with Veltrix dark text */
+  --color-primary: #171820; 
+  --color-secondary: #f8f5ee;
+
+  /* Keep feedback colors just in case */
+  --color-success: #059669;
+  --color-success-bg: #d1fae5;
+  --color-warning: #d97706;
+  --color-warning-bg: #fef3c7;
+  --color-error: #dc2626;
+  --color-error-bg: #fee2e2;
+
+  --font-sans: "Inter", "DM Sans", system-ui, sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-mono: "Space Mono", monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-veltrix-light-1 text-primary font-sans antialiased selection:bg-veltrix-gold-1 selection:text-white;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-primary;
+  }
+}
+
+@layer utilities {
+  .container-v {
+    @apply w-full max-w-[1280px] mx-auto px-6 md:px-10;
+  }
+  .gold-text {
+    @apply text-veltrix-gold-1;
+  }
+  .eyebrow {
+    @apply text-[10px] md:text-[11px] uppercase tracking-[.24em] font-bold;
+  }
+  .btn-primary {
+    @apply bg-veltrix-dark-2 text-veltrix-light-5 px-6 py-4 text-[10px] uppercase tracking-[.15em] font-bold flex gap-3 items-center justify-center hover:bg-[#292b35] transition-colors cursor-pointer;
+  }
+  .btn-outline {
+    @apply border border-veltrix-gold-1 text-primary px-6 py-4 text-[10px] uppercase tracking-[.15em] font-bold flex gap-3 items-center justify-center hover:bg-veltrix-light-2 transition-colors cursor-pointer;
+  }
+  .btn-gold {
+    @apply bg-veltrix-gold-1 text-veltrix-dark-3 px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider hover:bg-veltrix-gold-3 transition-colors flex items-center justify-center gap-2 cursor-pointer;
+  }
+  .card-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  .input-premium {
+    @apply w-full px-4 py-3 rounded-none border border-veltrix-border-2 bg-veltrix-light-3 focus:outline-none focus:ring-1 focus:ring-veltrix-gold-1 focus:border-veltrix-gold-1 transition-all duration-300 font-mono text-sm;
+  }
+}
