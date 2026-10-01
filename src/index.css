@@ -19,6 +19,7 @@
   --color-veltrix-gold-3: #c29a48;
   --color-veltrix-gold-4: #bd984d;
   --color-veltrix-gold-5: #8b6b2f;
+  --color-veltrix-gold-text: #855f19;
 
   --color-veltrix-text-dark: #555652;
   --color-veltrix-text-darker: #2d291f;
@@ -61,7 +62,7 @@
     @apply w-full max-w-[1280px] mx-auto px-6 md:px-10;
   }
   .gold-text {
-    @apply text-veltrix-gold-1;
+    @apply text-veltrix-gold-text;
   }
   .eyebrow {
     @apply text-[10px] md:text-[11px] uppercase tracking-[.24em] font-bold;

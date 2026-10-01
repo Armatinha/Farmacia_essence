@@ -105,7 +105,7 @@ export default function Home() {
       <section className="bg-veltrix-gold-1 py-20 overflow-hidden">
         <div className="container-v grid lg:grid-cols-[1.3fr_.7fr] gap-10 items-end">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <p className="eyebrow text-veltrix-dark-3 opacity-80">{t('home.authEyebrow')}</p>
+            <p className="eyebrow text-veltrix-dark-3">{t('home.authEyebrow')}</p>
             <h2 className="font-display text-5xl md:text-7xl tracking-tighter mt-4 leading-none text-veltrix-dark-3">{t('home.authTitle')}</h2>
             <p className="max-w-2xl mt-6 text-veltrix-text-darker">
               {t('home.authText')}

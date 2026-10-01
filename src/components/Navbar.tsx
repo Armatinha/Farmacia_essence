@@ -58,12 +58,14 @@ export default function Navbar() {
           <div className="flex border border-veltrix-border-1 p-1 text-[10px] font-bold">
             <button 
               onClick={() => changeLanguage('en')}
+              aria-label="Select English language"
               className={`px-2.5 py-1.5 cursor-pointer transition-colors ${i18n.language === 'en' ? 'bg-veltrix-dark-2 text-veltrix-light-5' : 'text-veltrix-dark-3 hover:text-veltrix-gold-1'}`}
             >
               EN
             </button>
             <button 
               onClick={() => changeLanguage('es')}
+              aria-label="Seleccionar idioma español"
               className={`px-2.5 py-1.5 cursor-pointer transition-colors ${i18n.language === 'es' ? 'bg-veltrix-dark-2 text-veltrix-light-5' : 'text-veltrix-dark-3 hover:text-veltrix-gold-1'}`}
             >
               ES
@@ -76,8 +78,10 @@ export default function Navbar() {
           
           {/* Mobile Toggle */}
           <button
-            className="md:hidden p-2 text-veltrix-dark-3 hover:text-veltrix-gold-1"
+            className="md:hidden p-2 text-veltrix-dark-3 hover:text-veltrix-gold-1 cursor-pointer"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isOpen}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

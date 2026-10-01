@@ -25,7 +25,7 @@ export default function Footer() {
           <p className="mt-6 text-sm text-veltrix-text-muted max-w-sm leading-7">
             {t('footer.description')}
           </p>
-          <p className="mt-4 text-[10px] text-veltrix-text-muted/60 leading-relaxed">
+          <p className="mt-4 text-[10px] text-veltrix-text-muted leading-relaxed">
             Essence Pharma Ltd. · Kuwait, 104 St.<br />
             support@essencepharma.com
           </p>
@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container-v relative z-10 mt-14 pt-6 border-t border-veltrix-dark-4 flex flex-wrap gap-4 justify-between text-[9px] tracking-wider uppercase text-gray-500">
+      <div className="container-v relative z-10 mt-14 pt-6 border-t border-veltrix-dark-4 flex flex-wrap gap-4 justify-between text-[10px] tracking-wider uppercase text-veltrix-text-muted">
         <span>© {new Date().getFullYear()} Essence Pharma</span>
         <div className="flex gap-4">
           <a href="#" className="hover:text-veltrix-gold-1 transition-colors">Privacy Policy</a>
