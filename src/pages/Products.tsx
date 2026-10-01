@@ -3,7 +3,9 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/hero.png';
+import vialsImage from '../assets/essence-vials.png';
+import penBoxImage from '../assets/essence-pen-box.png';
+import sealsImage from '../assets/essence-seals.jpg';
 
 interface ProductItem {
   id: number;
@@ -20,43 +22,58 @@ interface ProductItem {
 const initialProducts: ProductItem[] = [
   {
     id: 1,
-    name: 'GHK-Cu',
-    concentration: '100 mg',
-    formula: 'C₁₄H₂₄CuN₆O₄',
+    name: 'RETATRUTIDE',
+    concentration: '40 mg',
+    formula: 'ESS-R40',
     category: 'Peptídeos',
-    purity: '≥ 98.9% HPLC',
-    description: 'Complexo de peptídeo de cobre associado ao suporte de pele, cabelo e tecidos.',
-    presentations: '3 apresentações: Liofilizado · Solução · Caneta injetável'
+    purity: '≥ 99.4% HPLC',
+    description: 'Retatrutida - Triplo agonista (GLP-1, GIP, Glucagon). Pó liofilizado de grau de pesquisa.',
+    presentations: 'Liofilizado · Caneta injetável',
+    image_url: vialsImage
   },
   {
     id: 2,
-    name: 'GLOW',
-    concentration: '70 mg',
-    formula: 'OXY-G7',
-    category: 'Peptídeos',
-    purity: '≥ 99.0% HPLC',
-    description: 'Blend focado na radiância da pele, suporte à hidratação e bem-estar cosmético.',
-    presentations: '2 apresentações: Liofilizado · Caneta injetável'
+    name: 'TIRZEPATIDE',
+    concentration: '15 mg / 75 mg',
+    formula: 'ESS-T75',
+    category: 'Metabólico',
+    purity: '≥ 99.2% HPLC',
+    description: 'Tirzepatida - Duplo agonista (GLP-1 / GIP). Apresentação em frasco e caneta dosadora de precisão.',
+    presentations: 'Caneta dosadora 75mg · Frasco liofilizado 15mg',
+    image_url: penBoxImage
   },
   {
     id: 3,
-    name: 'RETAGEN',
-    concentration: '40 mg',
-    formula: 'OXY-R4',
-    category: 'Hormonal',
-    purity: '≥ 99.4% HPLC',
-    description: 'Retatrutida - formulação de triplo agonista avançada.',
-    presentations: '2 apresentações: Liofilizado · Caneta injetável'
+    name: 'SEMAGLUTIDE',
+    concentration: '10 mg',
+    formula: 'ESS-S10',
+    category: 'Peptídeos',
+    purity: '≥ 99.1% HPLC',
+    description: 'Semaglutida - Agonista do receptor GLP-1 para estudos de modulação metabólica e controle glicêmico.',
+    presentations: 'Liofilizado · Frasco de vidro hermético',
+    image_url: vialsImage
   },
   {
     id: 4,
-    name: 'TIRZEGEN',
-    concentration: '60 mg',
-    formula: 'OXY-T6',
-    category: 'Hormonal',
-    purity: '≥ 99.2% HPLC',
-    description: 'Tirzepatida - formulação de duplo agonista otimizada.',
-    presentations: '2 apresentações: Liofilizado · Caneta injetável'
+    name: 'BPC-157',
+    concentration: '10 mg',
+    formula: 'ESS-B10',
+    category: 'Regenerativo',
+    purity: '≥ 99.0% HPLC',
+    description: 'Composto peptídico de proteção gástrica e regeneração de tecidos e tendões.',
+    presentations: 'Liofilizado · Selo de autenticidade holográfico',
+    image_url: sealsImage
+  },
+  {
+    id: 5,
+    name: 'IPAMORELIN',
+    concentration: '5 mg',
+    formula: 'ESS-I5',
+    category: 'Secretagogos',
+    purity: '≥ 99.0% HPLC',
+    description: 'Pentapeptídeo mimético com alta seletividade na estimulação e recuperação celular.',
+    presentations: 'Liofilizado · Grau de pesquisa avançado',
+    image_url: vialsImage
   }
 ];
 
@@ -112,7 +129,7 @@ export default function Products() {
                 <img 
                   alt={product.name} 
                   className="w-full h-full object-cover grayscale-[.08] group-hover:scale-[1.03] transition-transform duration-700" 
-                  src={product.image_url || heroImage} 
+                  src={product.image_url || vialsImage} 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-veltrix-dark-1/30 to-transparent"></div>
                 

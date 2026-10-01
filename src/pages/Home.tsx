@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, Microscope, FileCheck, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/hero.png';
+import heroImage from '../assets/essence-pen-box.png';
 
 export default function Home() {
   const { t } = useTranslation();

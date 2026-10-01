@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
+import essenceEmblem from '../assets/essence-emblem.png';
 
 export default function Footer() {
   return (
@@ -7,10 +8,7 @@ export default function Footer() {
       <div className="container-v grid md:grid-cols-[1.5fr_1fr_1fr] gap-12 relative z-10">
         <div>
           <Link to="/" className="flex items-center gap-3">
-            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-              <path d="M4 6h7l10 18-4 7L4 6Z" fill="#b58a34"></path>
-              <path d="M14 6h7l5 9 4-7h8L22 35l-4-7 8-13-5-9h-7Z" fill="#c29a48"></path>
-            </svg>
+            <img src={essenceEmblem} alt="Essence Emblem" className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-dark-4" />
             <div>
               <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">ESSENCE</div>
               <div className="mt-1 flex items-center gap-2">

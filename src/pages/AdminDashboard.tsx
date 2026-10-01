@@ -20,6 +20,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import essenceEmblem from '../assets/essence-emblem.png';
 
 type TabType = 'telemetry' | 'products' | 'batches';
 
@@ -275,12 +276,9 @@ export default function AdminDashboard() {
       <aside className="w-full md:w-72 bg-veltrix-dark-1 border-r border-veltrix-dark-4 p-8 flex flex-col z-20 shadow-2xl shadow-black/50">
         <div className="mb-10">
           <Link to="/" className="flex items-center gap-3">
-            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-              <path d="M4 6h7l10 18-4 7L4 6Z" fill="#b58a34"></path>
-              <path d="M14 6h7l5 9 4-7h8L22 35l-4-7 8-13-5-9h-7Z" fill="#c29a48"></path>
-            </svg>
+            <img src={essenceEmblem} alt="Essence Emblem" className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-dark-4" />
             <div>
-              <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">OXYGEN</div>
+              <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">ESSENCE</div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="h-px w-5 bg-veltrix-gold-1"></span>
                 <span className="text-[8px] tracking-[.3em] text-veltrix-border-1">ADMIN</span>

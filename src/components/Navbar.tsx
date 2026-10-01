@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ShieldCheck, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import essenceEmblem from '../assets/essence-emblem.png';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,11 +27,7 @@ export default function Navbar() {
       <div className="container-v h-[76px] flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <div className="flex items-center justify-center">
-            {/* Simple logo mockup in Veltrix gold */}
-            <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
-              <path d="M4 6h7l10 18-4 7L4 6Z" fill="#b58a34"></path>
-              <path d="M14 6h7l5 9 4-7h8L22 35l-4-7 8-13-5-9h-7Z" fill="#c29a48"></path>
-            </svg>
+            <img src={essenceEmblem} alt="Essence Emblem" className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-border-2" />
           </div>
           <div>
             <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-dark-3">ESSENCE</div>
