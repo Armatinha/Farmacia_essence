@@ -38,7 +38,7 @@ export default function Authenticate() {
   const [code, setCode] = useState('');
   const [status, setStatus] = useState<StatusType>('idle');
   const [result, setResult] = useState<VerificationResult | null>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,27 +68,27 @@ export default function Authenticate() {
     } catch (err) {
       console.warn('Backend call failed, using fallback check', err);
       // Fallback in case backend is offline
-      if (cleanCode === 'VALIDO1') {
+      if (cleanCode === '2H7MBT' || cleanCode === 'VALIDO1') {
         setStatus('success');
         setResult({
           success: true,
           status: 'VALID_FIRST_TIME',
-          code: 'VALIDO1',
-          message: 'Autêntico: Primeira verificação realizada.',
+          code: cleanCode,
+          message: t('auth.successDesc'),
           times_checked: 1,
-          product: { id: 1, name: 'GHK-Cu', slug: 'ghk-cu', purity: '≥ 98.9% HPLC', concentration: '100 mg' },
-          batch: { id: 1, batch_number: 'LOT-GHK-2026A', expiry_date: '2028-01-10' }
+          product: { id: 1, name: 'RETATRUTIDE', slug: 'retatrutide', purity: '≥ 99.4% HPLC', concentration: '40 mg' },
+          batch: { id: 1, batch_number: 'LOT-RET-2026A', expiry_date: '2028-03-01' }
         });
-      } else if (cleanCode === 'USADO2') {
+      } else if (cleanCode === 'USED02' || cleanCode === 'USADO2') {
         setStatus('warning');
         setResult({
           success: true,
           status: 'WARNING_MULTIPLE_USE',
-          code: 'USADO2',
-          message: 'Atenção: Este código já foi verificado anteriormente.',
-          times_checked: 3,
-          product: { id: 2, name: 'GLOW', slug: 'glow', purity: '≥ 99.0% HPLC', concentration: '70 mg' },
-          batch: { id: 2, batch_number: 'LOT-GLW-2026B', expiry_date: '2028-02-15' }
+          code: cleanCode,
+          message: t('auth.warnDesc'),
+          times_checked: 2,
+          product: { id: 3, name: 'SEMAGLUTIDE', slug: 'semaglutide', purity: '≥ 99.1% HPLC', concentration: '10 mg' },
+          batch: { id: 3, batch_number: 'LOT-SEM-2026C', expiry_date: '2028-02-15' }
         });
       } else {
         setStatus('error');
@@ -96,16 +96,17 @@ export default function Authenticate() {
           success: false,
           status: 'NOT_FOUND',
           code: cleanCode,
-          message: 'Código não encontrado em nossa base de dados oficial.'
+          message: t('auth.errDesc')
         });
       }
     }
   };
 
   const formatDate = (dateStr?: string) => {
-    if (!dateStr) return new Date().toLocaleString('pt-BR');
+    const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+    if (!dateStr) return new Date().toLocaleString(locale);
     try {
-      return new Date(dateStr).toLocaleString('pt-BR');
+      return new Date(dateStr).toLocaleString(locale);
     } catch {
       return dateStr;
     }
@@ -177,30 +178,30 @@ export default function Authenticate() {
                   <CheckCircle2 size={44} className="text-[#15803d] mb-4" />
                   <h3 className="font-display text-2xl text-[#166534] mb-2">{t('auth.successTitle')}</h3>
                   <p className="text-[#166534] text-sm leading-relaxed max-w-lg mb-6">
-                    {result?.message || t('auth.successDesc')}
+                    {i18n.language === 'es' ? t('auth.successDesc') : (result?.message || t('auth.successDesc'))}
                   </p>
 
                   {result?.product && (
                     <div className="w-full bg-white/90 border border-[#bbf7d0] p-6 text-left mb-4 shadow-xs">
                       <div className="flex items-center gap-2 text-xs font-bold font-mono text-[#166534] uppercase tracking-wider mb-3">
-                        <PackageCheck size={16} /> Produto Autenticado
+                        <PackageCheck size={16} /> {t('auth.authenticatedProduct')}
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                         <div>
-                          <span className="text-[#166534]/70 block">Produto:</span>
+                          <span className="text-[#166534]/70 block">{t('auth.productLabel')}</span>
                           <strong className="text-[#14532d] text-sm font-sans">{result.product.name}</strong>
                         </div>
                         <div>
-                          <span className="text-[#166534]/70 block">Concentração:</span>
-                          <strong className="text-[#14532d]">{result.product.concentration || 'Padrão'}</strong>
+                          <span className="text-[#166534]/70 block">{t('auth.concentrationLabel')}</span>
+                          <strong className="text-[#14532d]">{result.product.concentration || '40 mg'}</strong>
                         </div>
                         <div>
-                          <span className="text-[#166534]/70 block">Pureza HPLC:</span>
+                          <span className="text-[#166534]/70 block">{t('auth.purityLabel')}</span>
                           <strong className="text-[#14532d]">{result.product.purity || '≥ 99.0%'}</strong>
                         </div>
                         <div>
-                          <span className="text-[#166534]/70 block">Lote Oficial:</span>
-                          <strong className="text-[#14532d]">{result.batch?.batch_number || 'LOT-2026'}</strong>
+                          <span className="text-[#166534]/70 block">{t('auth.batchLabel')}</span>
+                          <strong className="text-[#14532d]">{result.batch?.batch_number || 'LOT-RET-2026A'}</strong>
                         </div>
                       </div>
                     </div>
@@ -220,21 +221,23 @@ export default function Authenticate() {
                   <AlertTriangle size={44} className="text-[#b45309] mb-4" />
                   <h3 className="font-display text-2xl text-[#92400e] mb-2">{t('auth.warnTitle')}</h3>
                   <p className="text-[#92400e] text-sm mb-4 leading-relaxed max-w-lg">
-                    {result?.message || 'Atenção: Este código de segurança já foi verificado anteriormente.'}
+                    {i18n.language === 'es' 
+                      ? `${t('auth.warnDesc')} ${result?.times_checked || 2} ${t('auth.times')} ${t('auth.warnDesc2')}`
+                      : (result?.message || t('auth.warnDesc'))}
                   </p>
 
                   <div className="w-full bg-white/90 border border-[#fde68a] p-5 text-left mb-4 shadow-xs">
                     <div className="flex items-center gap-2 text-xs font-bold font-mono text-[#92400e] uppercase tracking-wider mb-2">
-                      <ShieldAlert size={16} /> Alerta de Duplicidade
+                      <ShieldAlert size={16} /> {t('auth.duplicateAlert')}
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-xs font-mono text-[#78350f]">
                       <div>
-                        <span>Total de consultas:</span>
-                        <p className="font-bold text-base text-[#b45309]">{result?.times_checked} vezes</p>
+                        <span>{t('auth.totalChecks')}</span>
+                        <p className="font-bold text-base text-[#b45309]">{result?.times_checked} {t('auth.times')}</p>
                       </div>
                       <div>
-                        <span>Produto registrado:</span>
-                        <p className="font-bold text-sm text-[#78350f]">{result?.product?.name || 'Composto Essence'}</p>
+                        <span>{t('auth.registeredProduct')}</span>
+                        <p className="font-bold text-sm text-[#78350f]">{result?.product?.name || 'RETATRUTIDE'}</p>
                       </div>
                     </div>
                   </div>
@@ -253,10 +256,10 @@ export default function Authenticate() {
                   <XCircle size={44} className="text-[#b91c1c] mb-4" />
                   <h3 className="font-display text-2xl text-[#991b1b] mb-2">{t('auth.errTitle')}</h3>
                   <p className="text-[#991b1b] text-sm leading-relaxed max-w-md mb-2">
-                    {result?.message || t('auth.errDesc')}
+                    {i18n.language === 'es' ? t('auth.errDesc') : (result?.message || t('auth.errDesc'))}
                   </p>
                   <p className="text-[#991b1b]/80 text-xs font-mono">
-                    Código consultado: <strong>{result?.code || code.toUpperCase()}</strong>
+                    {t('auth.queriedCode')} <strong>{result?.code || code.toUpperCase()}</strong>
                   </p>
                 </motion.div>
               )}
@@ -265,35 +268,35 @@ export default function Authenticate() {
 
           {/* Quick test buttons for convenience */}
           <div className="mt-8 text-center text-xs text-veltrix-text-muted">
-            <span className="uppercase tracking-widest text-[10px] font-bold block mb-2">Códigos de Teste Registrados no Neon:</span>
+            <span className="uppercase tracking-widest text-[10px] font-bold block mb-2">{t('auth.quickTestTitle')}</span>
             <div className="flex flex-wrap justify-center gap-2">
               <button 
                 type="button"
-                onClick={() => setCode('VALIDO1')}
+                onClick={() => setCode('2H7MBT')}
                 className="bg-veltrix-light-2 hover:bg-veltrix-light-4 border border-veltrix-border-2 px-2.5 py-1 font-mono text-[11px] text-veltrix-dark-3 cursor-pointer transition-colors"
               >
-                VALIDO1 (Válido 1ª vez)
+                {t('auth.testValid')}
               </button>
               <button 
                 type="button"
-                onClick={() => setCode('USADO2')}
+                onClick={() => setCode('USED02')}
                 className="bg-veltrix-light-2 hover:bg-veltrix-light-4 border border-veltrix-border-2 px-2.5 py-1 font-mono text-[11px] text-[#b45309] cursor-pointer transition-colors"
               >
-                USADO2 (Alerta re-checagem)
+                {t('auth.testUsed')}
               </button>
               <button 
                 type="button"
-                onClick={() => setCode('XY9-8L4-ZQX')}
+                onClick={() => setCode('RET40M')}
                 className="bg-veltrix-light-2 hover:bg-veltrix-light-4 border border-veltrix-border-2 px-2.5 py-1 font-mono text-[11px] text-veltrix-dark-3 cursor-pointer transition-colors"
               >
-                XY9-8L4-ZQX
+                {t('auth.testRet')}
               </button>
               <button 
                 type="button"
-                onClick={() => setCode('INVALIDO-99')}
+                onClick={() => setCode('INVA99')}
                 className="bg-veltrix-light-2 hover:bg-veltrix-light-4 border border-veltrix-border-2 px-2.5 py-1 font-mono text-[11px] text-red-600 cursor-pointer transition-colors"
               >
-                INVALIDO-99 (Inexistente)
+                {t('auth.testInvalid')}
               </button>
             </div>
           </div>

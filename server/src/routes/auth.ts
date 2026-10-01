@@ -15,7 +15,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
+      return res.status(400).json({ error: 'Email and password are required.' });
     }
 
     // Check user in Neon DB
@@ -30,12 +30,12 @@ authRouter.post('/login', async (req: Request, res: Response) => {
           user: {
             id: 1,
             email: 'admin@essencepharma.com',
-            name: 'Administrador Essence',
+            name: 'Essence Administrator',
             role: 'admin'
           }
         });
       }
-      return res.status(401).json({ error: 'Credenciais inválidas.' });
+      return res.status(401).json({ error: 'Invalid credentials.' });
     }
 
     const user = userRes.rows[0];
@@ -45,7 +45,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     const isMatch = password === 'admin123' || user.password_hash === inputHash;
 
     if (!isMatch) {
-      return res.status(401).json({ error: 'Senha incorreta.' });
+      return res.status(401).json({ error: 'Incorrect password.' });
     }
 
     const token = crypto.randomBytes(32).toString('hex');
@@ -60,8 +60,8 @@ authRouter.post('/login', async (req: Request, res: Response) => {
       }
     });
   } catch (error: any) {
-    console.error('Erro no login admin:', error);
-    return res.status(500).json({ error: 'Falha na autenticação.' });
+    console.error('Error during admin login:', error);
+    return res.status(500).json({ error: 'Authentication failed.' });
   }
 });
 
@@ -73,11 +73,11 @@ authRouter.get('/me', async (req: Request, res: Response) => {
       user: {
         id: 1,
         email: 'admin@essencepharma.com',
-        name: 'Administrador Chefe',
+        name: 'Chief Security Administrator',
         role: 'admin'
       }
     });
   } catch (_error: any) {
-    return res.status(500).json({ error: 'Erro ao validar sessão.' });
+    return res.status(500).json({ error: 'Failed to validate session.' });
   }
 });

@@ -43,10 +43,10 @@ telemetryRouter.get('/metrics', async (req: Request, res: Response) => {
 
     const thisWeek = parseInt(weeklyRes.rows[0]?.this_week || '0', 10);
     const lastWeek = parseInt(weeklyRes.rows[0]?.last_week || '0', 10);
-    let growthRate = '+12%';
+    let growthRate = '+12% THIS WEEK';
     if (lastWeek > 0) {
       const diff = ((thisWeek - lastWeek) / lastWeek) * 100;
-      growthRate = `${diff >= 0 ? '+' : ''}${Math.round(diff)}% ESTA SEMANA`;
+      growthRate = `${diff >= 0 ? '+' : ''}${Math.round(diff)}% THIS WEEK`;
     }
 
     // 5. Breakdown by status
@@ -65,8 +65,8 @@ telemetryRouter.get('/metrics', async (req: Request, res: Response) => {
       status_breakdown: breakdownRes.rows
     });
   } catch (error: any) {
-    console.error('Erro ao calcular métricas de telemetria:', error);
-    return res.status(500).json({ error: 'Falha ao buscar telemetria no Neon PostgreSQL.' });
+    console.error('Error calculating telemetry metrics:', error);
+    return res.status(500).json({ error: 'Failed to retrieve telemetry metrics from Neon PostgreSQL.' });
   }
 });
 
@@ -129,8 +129,8 @@ telemetryRouter.get('/logs', async (req: Request, res: Response) => {
       logs: logsResult.rows
     });
   } catch (error: any) {
-    console.error('Erro ao buscar logs de verificação:', error);
-    return res.status(500).json({ error: 'Falha ao carregar histórico de consultas.' });
+    console.error('Error fetching verification logs:', error);
+    return res.status(500).json({ error: 'Failed to retrieve verification logs.' });
   }
 });
 
@@ -152,7 +152,7 @@ telemetryRouter.get('/chart', async (req: Request, res: Response) => {
 
     return res.json(chartRes.rows);
   } catch (error: any) {
-    console.error('Erro ao buscar série temporal de telemetria:', error);
-    return res.status(500).json({ error: 'Falha ao carregar gráfico de telemetria.' });
+    console.error('Error fetching telemetry chart series:', error);
+    return res.status(500).json({ error: 'Failed to load telemetry chart.' });
   }
 });

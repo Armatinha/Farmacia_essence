@@ -79,7 +79,7 @@ export default function AdminDashboard() {
   // Telemetry state
   const [metrics, setMetrics] = useState<TelemetryMetrics>({
     total_verifications: 1284,
-    weekly_growth: '+12% ESTA SEMANA',
+    weekly_growth: '+12% THIS WEEK',
     fraud_alerts: 14,
     active_batches: 4,
     total_codes: 15000
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
     slug: '',
     concentration: '',
     formula: '',
-    category: 'Peptídeos',
+    category: 'Peptides',
     purity: '≥ 99.0% HPLC',
     description: ''
   });
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
         setLogs(logsData.logs || []);
       }
     } catch (err) {
-      console.error('Erro ao conectar ao Neon backend:', err);
+      console.error('Error connecting to Neon backend:', err);
       setDbStatus('error');
     } finally {
       setLoading(false);
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
         setProducts(data);
       }
     } catch (err) {
-      console.error('Erro ao carregar produtos:', err);
+      console.error('Error loading products:', err);
     } finally {
       setLoading(false);
     }
@@ -167,7 +167,7 @@ export default function AdminDashboard() {
         setBatches(data);
       }
     } catch (err) {
-      console.error('Erro ao carregar lotes:', err);
+      console.error('Error loading batches:', err);
     } finally {
       setLoading(false);
     }
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
         setSelectedBatchCodes(data.codes || []);
       }
     } catch (err) {
-      console.error('Erro ao buscar códigos do lote:', err);
+      console.error('Error fetching batch codes:', err);
     }
   };
 
@@ -205,14 +205,14 @@ export default function AdminDashboard() {
           slug: '',
           concentration: '',
           formula: '',
-          category: 'Peptídeos',
+          category: 'Peptides',
           purity: '≥ 99.0% HPLC',
           description: ''
         });
         fetchProducts();
       }
     } catch (err) {
-      console.error('Erro ao criar produto:', err);
+      console.error('Error creating product:', err);
     }
   };
 
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
         fetchTelemetry();
       }
     } catch (err) {
-      console.error('Erro ao gerar lote:', err);
+      console.error('Error generating batch:', err);
     }
   };
 
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
   const formatDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
-      return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+      return d.toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' });
     } catch {
       return dateStr;
     }
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
               {dbStatus === 'checking' && (
                 <span className="flex items-center gap-1.5 text-amber-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                  Conectando...
+                  Connecting...
                 </span>
               )}
               {dbStatus === 'error' && (
@@ -316,7 +316,7 @@ export default function AdminDashboard() {
         </div>
         
         <nav className="flex flex-col gap-2 flex-grow">
-          <p className="eyebrow text-veltrix-gold-4 mb-2 opacity-70">Menu Principal</p>
+          <p className="eyebrow text-veltrix-gold-4 mb-2 opacity-70">Main Menu</p>
           <button 
             onClick={() => setActiveTab('telemetry')}
             className={`flex items-center gap-4 px-5 py-4 rounded-sm font-bold text-[10px] uppercase tracking-widest border transition-all cursor-pointer ${
@@ -325,7 +325,7 @@ export default function AdminDashboard() {
                 : 'text-veltrix-light-4 border-transparent hover:bg-veltrix-dark-2 hover:text-veltrix-gold-2'
             }`}
           >
-            <Activity size={16} /> Telemetria
+            <Activity size={16} /> Telemetry
           </button>
           
           <button 
@@ -336,7 +336,7 @@ export default function AdminDashboard() {
                 : 'text-veltrix-light-4 border-transparent hover:bg-veltrix-dark-2 hover:text-veltrix-gold-2'
             }`}
           >
-            <Package size={16} /> Produtos ({products.length})
+            <Package size={16} /> Products ({products.length})
           </button>
 
           <button 
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                 : 'text-veltrix-light-4 border-transparent hover:bg-veltrix-dark-2 hover:text-veltrix-gold-2'
             }`}
           >
-            <Key size={16} /> Lotes e Códigos ({batches.length})
+            <Key size={16} /> Batches & Codes ({batches.length})
           </button>
         </nav>
 
@@ -356,7 +356,7 @@ export default function AdminDashboard() {
             to="/" 
             className="flex items-center gap-4 px-5 py-4 text-veltrix-text-muted hover:text-red-400 w-full rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors"
           >
-            <LogOut size={16} /> Sair do Painel
+            <LogOut size={16} /> Exit Dashboard
           </Link>
         </div>
       </aside>
@@ -368,16 +368,16 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <p className="eyebrow gold-text mb-2">Painel de Controle • Neon Cloud</p>
+            <p className="eyebrow gold-text mb-2">Control Panel • Neon Cloud</p>
             <h1 className="font-display text-3xl md:text-5xl tracking-tighter text-veltrix-dark-3">
-              {activeTab === 'telemetry' && 'Visão Geral & Telemetria'}
-              {activeTab === 'products' && 'Gestão do Catálogo'}
-              {activeTab === 'batches' && 'Lotes & Códigos de Segurança'}
+              {activeTab === 'telemetry' && 'Overview & Telemetry'}
+              {activeTab === 'products' && 'Catalog Management'}
+              {activeTab === 'batches' && 'Batches & Security Codes'}
             </h1>
             <p className="text-veltrix-text-dark font-display text-base mt-1">
-              {activeTab === 'telemetry' && 'Acompanhe as verificações de autenticidade em tempo real gravadas no Neon.'}
-              {activeTab === 'products' && 'Gerencie fórmulas, concentrações e especificações farmacêuticas.'}
-              {activeTab === 'batches' && 'Gere novos lotes com milhares de códigos de autenticação anti-fraude.'}
+              {activeTab === 'telemetry' && 'Track real-time authenticity verifications logged in Neon PostgreSQL.'}
+              {activeTab === 'products' && 'Manage formulations, concentrations, and pharmaceutical specifications.'}
+              {activeTab === 'batches' && 'Generate new batches with thousands of unique 6-character anti-counterfeit security codes.'}
             </p>
           </div>
 
@@ -390,7 +390,7 @@ export default function AdminDashboard() {
               }}
               disabled={loading}
               className="p-3 bg-veltrix-light-3 hover:bg-veltrix-light-2 border border-veltrix-border-2 text-veltrix-dark-3 rounded cursor-pointer transition-colors shadow-xs"
-              title="Atualizar dados"
+              title="Refresh data"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin text-veltrix-gold-1' : ''} />
             </button>
@@ -400,7 +400,7 @@ export default function AdminDashboard() {
                 onClick={() => setShowProductModal(true)}
                 className="btn-gold flex items-center gap-2 text-xs"
               >
-                <Plus size={16} /> Novo Produto
+                <Plus size={16} /> New Product
               </button>
             )}
 
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
                 onClick={() => setShowBatchModal(true)}
                 className="btn-gold flex items-center gap-2 text-xs"
               >
-                <Plus size={16} /> Gerar Novo Lote
+                <Plus size={16} /> Generate New Batch
               </button>
             )}
           </div>
@@ -422,24 +422,24 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
               <div className="bg-veltrix-light-3 p-8 border border-veltrix-border-2 card-lift relative overflow-hidden shadow-xs">
                 <div className="absolute -right-4 -top-4 opacity-5 text-veltrix-dark-1"><Activity size={120} /></div>
-                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Total de Verificações</p>
+                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Total Verifications</p>
                 <h2 className="font-display text-5xl tracking-tighter text-veltrix-dark-3">{metrics.total_verifications.toLocaleString()}</h2>
                 <p className="text-[#166534] text-xs font-mono font-bold mt-4 tracking-wider">{metrics.weekly_growth}</p>
               </div>
               
               <div className="bg-veltrix-dark-2 p-8 border border-veltrix-dark-4 card-lift relative overflow-hidden shadow-xs">
                 <div className="absolute -right-4 -top-4 opacity-10 text-veltrix-gold-1"><ShieldCheck size={120} /></div>
-                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Alertas de Fraude</p>
+                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Fraud Alerts</p>
                 <h2 className="font-display text-5xl tracking-tighter text-veltrix-gold-1">{metrics.fraud_alerts}</h2>
-                <p className="text-veltrix-light-4 text-xs font-mono mt-4 tracking-wider">CÓDIGOS CHECADOS MÚLTIPLAS VEZES</p>
+                <p className="text-veltrix-light-4 text-xs font-mono mt-4 tracking-wider">CODES CHECKED MULTIPLE TIMES</p>
               </div>
               
               <div className="bg-veltrix-light-3 p-8 border border-veltrix-border-2 card-lift relative overflow-hidden shadow-xs">
                 <div className="absolute -right-4 -top-4 opacity-5 text-veltrix-dark-1"><Package size={120} /></div>
-                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Lotes Ativos</p>
+                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Active Batches</p>
                 <h2 className="font-display text-5xl tracking-tighter text-veltrix-dark-3">{metrics.active_batches}</h2>
                 <p className="text-veltrix-text-dark text-xs font-mono mt-4 tracking-wider">
-                  {metrics.total_codes.toLocaleString()} CÓDIGOS REGISTRADOS
+                  {metrics.total_codes.toLocaleString()} REGISTERED CODES
                 </p>
               </div>
             </div>
@@ -448,14 +448,14 @@ export default function AdminDashboard() {
             <div className="bg-veltrix-light-3 border border-veltrix-border-2 relative z-10 shadow-xs">
               <div className="px-8 py-6 border-b border-veltrix-border-2 bg-veltrix-light-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                  <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Últimas Consultas Registradas</h3>
-                  <p className="text-xs text-veltrix-text-gray font-mono mt-1">Sincronizado diretamente do Neon PostgreSQL via procedure RPC atômica</p>
+                  <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Recent Verification Queries</h3>
+                  <p className="text-xs text-veltrix-text-gray font-mono mt-1">Directly synchronized from Neon PostgreSQL via atomic RPC procedure</p>
                 </div>
                 <div className="relative w-full md:w-64">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-veltrix-text-muted" />
                   <input 
                     type="text" 
-                    placeholder="Filtrar por código..." 
+                    placeholder="Filter by code..." 
                     value={logSearch}
                     onChange={(e) => setLogSearch(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && fetchTelemetry()}
@@ -468,18 +468,18 @@ export default function AdminDashboard() {
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="border-b border-veltrix-border-2 text-[9px] uppercase tracking-widest text-veltrix-text-gray bg-veltrix-light-4">
-                      <th className="px-8 py-5 font-bold">Data / Hora</th>
-                      <th className="px-8 py-5 font-bold">Código Checado</th>
-                      <th className="px-8 py-5 font-bold">Status no Banco</th>
-                      <th className="px-8 py-5 font-bold">Produto</th>
-                      <th className="px-8 py-5 font-bold">IP / Região</th>
+                      <th className="px-8 py-5 font-bold">Date / Time</th>
+                      <th className="px-8 py-5 font-bold">Queried Code</th>
+                      <th className="px-8 py-5 font-bold">Database Status</th>
+                      <th className="px-8 py-5 font-bold">Product</th>
+                      <th className="px-8 py-5 font-bold">IP / Region</th>
                     </tr>
                   </thead>
                   <tbody className="text-sm font-mono">
                     {logs.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="px-8 py-10 text-center text-veltrix-text-muted">
-                          Nenhum registro encontrado no Neon.
+                          No records found in Neon.
                         </td>
                       </tr>
                     ) : (
@@ -490,22 +490,22 @@ export default function AdminDashboard() {
                           <td className="px-8 py-5">
                             {log.status_result === 'VALID_FIRST_TIME' && (
                               <span className="px-3 py-1.5 border border-[#bbf7d0] bg-[#f0fdf4] text-[#166534] text-[10px] uppercase font-bold tracking-widest inline-flex items-center gap-1.5">
-                                <CheckCircle2 size={12} /> Válido (1ª vez)
+                                <CheckCircle2 size={12} /> Valid (1st time)
                               </span>
                             )}
                             {log.status_result === 'WARNING_MULTIPLE_USE' && (
                               <span className="px-3 py-1.5 border border-[#fde68a] bg-[#fffbeb] text-[#92400e] text-[10px] uppercase font-bold tracking-widest inline-flex items-center gap-1.5">
-                                <AlertTriangle size={12} /> Alerta ({log.times_checked_at_moment}ª vez)
+                                <AlertTriangle size={12} /> Alert ({log.times_checked_at_moment}x)
                               </span>
                             )}
                             {log.status_result === 'NOT_FOUND' && (
                               <span className="px-3 py-1.5 border border-[#fecaca] bg-[#fef2f2] text-[#991b1b] text-[10px] uppercase font-bold tracking-widest inline-flex items-center gap-1.5">
-                                <XCircle size={12} /> Não Encontrado
+                                <XCircle size={12} /> Not Found
                               </span>
                             )}
                             {log.status_result === 'REVOKED' && (
                               <span className="px-3 py-1.5 border border-purple-200 bg-purple-50 text-purple-800 text-[10px] uppercase font-bold tracking-widest inline-flex items-center gap-1.5">
-                                Revogado
+                                Revoked
                               </span>
                             )}
                           </td>
@@ -513,7 +513,7 @@ export default function AdminDashboard() {
                             {log.product_name || '-'}
                           </td>
                           <td className="px-8 py-5 text-veltrix-text-gray text-xs">
-                            {log.location || 'BR / Brasil'}
+                            {log.location || 'US / Global'}
                           </td>
                         </tr>
                       ))
@@ -534,7 +534,7 @@ export default function AdminDashboard() {
                   <div>
                     <div className="flex justify-between items-start mb-3">
                       <span className="px-2 py-0.5 bg-veltrix-gold-1 text-veltrix-dark-3 font-mono text-[9px] font-bold uppercase">
-                        {p.category || 'Peptídeos'}
+                        {p.category || 'Peptides'}
                       </span>
                       <span className="font-mono text-xs text-[#15803d] font-bold">
                         {p.purity || '≥ 99.0%'}
@@ -543,11 +543,11 @@ export default function AdminDashboard() {
                     <h3 className="font-display text-2xl text-veltrix-dark-3 font-bold mb-1">{p.name}</h3>
                     <p className="font-mono text-xs text-veltrix-gold-5 mb-3">{p.formula || '-'}</p>
                     <p className="text-xs text-veltrix-text-dark line-clamp-3 leading-relaxed mb-4">
-                      {p.description || 'Sem descrição cadastrada.'}
+                      {p.description || 'No description registered.'}
                     </p>
                   </div>
                   <div className="pt-4 border-t border-veltrix-border-2 flex justify-between items-center text-xs font-mono">
-                    <span className="text-veltrix-text-muted">Concentração:</span>
+                    <span className="text-veltrix-text-muted">Concentration:</span>
                     <strong className="text-veltrix-dark-3">{p.concentration || '-'}</strong>
                   </div>
                 </div>
@@ -561,19 +561,19 @@ export default function AdminDashboard() {
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <div className="bg-veltrix-light-3 border border-veltrix-border-2 overflow-hidden shadow-xs">
               <div className="px-8 py-6 border-b border-veltrix-border-2 bg-veltrix-light-2">
-                <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Lotes Registrados na Fábrica</h3>
+                <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Registered Production Batches</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="border-b border-veltrix-border-2 text-[9px] uppercase tracking-widest text-veltrix-text-gray bg-veltrix-light-4">
-                      <th className="px-8 py-5 font-bold">Nº do Lote</th>
-                      <th className="px-8 py-5 font-bold">Produto Associado</th>
-                      <th className="px-8 py-5 font-bold">Códigos Ativos</th>
-                      <th className="px-8 py-5 font-bold">Consultas Realizadas</th>
-                      <th className="px-8 py-5 font-bold">Alertas de Fraude</th>
-                      <th className="px-8 py-5 font-bold">Validade</th>
-                      <th className="px-8 py-5 font-bold">Ações</th>
+                      <th className="px-8 py-5 font-bold">Batch Number</th>
+                      <th className="px-8 py-5 font-bold">Associated Product</th>
+                      <th className="px-8 py-5 font-bold">Active Codes</th>
+                      <th className="px-8 py-5 font-bold">Queries Completed</th>
+                      <th className="px-8 py-5 font-bold">Fraud Alerts</th>
+                      <th className="px-8 py-5 font-bold">Expiry Date</th>
+                      <th className="px-8 py-5 font-bold">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="text-sm font-mono">
@@ -593,20 +593,20 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-8 py-5 text-xs">
                           {parseInt(b.fraud_alerts_count || '0', 10) > 0 ? (
-                            <span className="text-[#b45309] font-bold">{b.fraud_alerts_count} alertas</span>
+                            <span className="text-[#b45309] font-bold">{b.fraud_alerts_count} alerts</span>
                           ) : (
                             <span className="text-emerald-700">0</span>
                           )}
                         </td>
                         <td className="px-8 py-5 text-veltrix-text-muted text-xs">
-                          {b.expiry_date ? new Date(b.expiry_date).toLocaleDateString('pt-BR') : '-'}
+                          {b.expiry_date ? new Date(b.expiry_date).toLocaleDateString('en-US') : '-'}
                         </td>
                         <td className="px-8 py-5">
                           <button 
                             onClick={() => handleViewCodes(b.id, b.batch_number)}
                             className="text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 bg-veltrix-dark-2 text-veltrix-light-5 hover:text-veltrix-gold-1 rounded cursor-pointer transition-colors"
                           >
-                            Ver Códigos
+                            View Codes
                           </button>
                         </td>
                       </tr>
@@ -618,7 +618,7 @@ export default function AdminDashboard() {
           </motion.div>
         )}
 
-        {/* MODAL: NOVO PRODUTO */}
+        {/* MODAL: NEW PRODUCT */}
         <AnimatePresence>
           {showProductModal && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
@@ -634,11 +634,11 @@ export default function AdminDashboard() {
                 >
                   <X size={20} />
                 </button>
-                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-6">Cadastrar Novo Produto</h3>
+                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-6">Register New Product</h3>
 
                 <form onSubmit={handleCreateProduct} className="flex flex-col gap-4 text-xs font-mono">
                   <div>
-                    <label className="block text-veltrix-text-muted uppercase mb-1">Nome do Composto</label>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Compound Name</label>
                     <input 
                       type="text" 
                       required
@@ -660,7 +660,7 @@ export default function AdminDashboard() {
                       />
                     </div>
                     <div>
-                      <label className="block text-veltrix-text-muted uppercase mb-1">Concentração</label>
+                      <label className="block text-veltrix-text-muted uppercase mb-1">Concentration</label>
                       <input 
                         type="text" 
                         placeholder="Ex: 50 mg"
@@ -672,7 +672,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-veltrix-text-muted uppercase mb-1">Fórmula Molecular</label>
+                      <label className="block text-veltrix-text-muted uppercase mb-1">Molecular Formula</label>
                       <input 
                         type="text" 
                         placeholder="Ex: C₁₄H₂₂N₄O₉"
@@ -682,7 +682,7 @@ export default function AdminDashboard() {
                       />
                     </div>
                     <div>
-                      <label className="block text-veltrix-text-muted uppercase mb-1">Pureza HPLC</label>
+                      <label className="block text-veltrix-text-muted uppercase mb-1">HPLC Purity</label>
                       <input 
                         type="text" 
                         value={newProduct.purity}
@@ -692,10 +692,10 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-veltrix-text-muted uppercase mb-1">Descrição</label>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Description</label>
                     <textarea 
                       rows={3}
-                      placeholder="Descrição técnica e apresentação..."
+                      placeholder="Technical description and presentation..."
                       value={newProduct.description}
                       onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                       className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3 font-sans"
@@ -707,10 +707,10 @@ export default function AdminDashboard() {
                       onClick={() => setShowProductModal(false)}
                       className="px-4 py-2 border border-veltrix-border-2 text-veltrix-text-muted hover:bg-veltrix-light-2"
                     >
-                      Cancelar
+                      Cancel
                     </button>
                     <button type="submit" className="btn-gold">
-                      Salvar no Neon
+                      Save to Neon
                     </button>
                   </div>
                 </form>
@@ -719,7 +719,7 @@ export default function AdminDashboard() {
           )}
         </AnimatePresence>
 
-        {/* MODAL: GERAR NOVO LOTE */}
+        {/* MODAL: GENERATE NEW BATCH */}
         <AnimatePresence>
           {showBatchModal && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
@@ -735,12 +735,12 @@ export default function AdminDashboard() {
                 >
                   <X size={20} />
                 </button>
-                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-2">Gerador de Lotes e Códigos</h3>
-                <p className="text-xs text-veltrix-text-gray font-mono mb-6">Gera códigos criptograficamente seguros em transação no Neon PostgreSQL.</p>
+                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-2">Batch & Code Generator</h3>
+                <p className="text-xs text-veltrix-text-gray font-mono mb-6">Generates cryptographically secure 6-character alphanumeric codes in Neon PostgreSQL.</p>
 
                 <form onSubmit={handleGenerateBatch} className="flex flex-col gap-4 text-xs font-mono">
                   <div>
-                    <label className="block text-veltrix-text-muted uppercase mb-1">Produto</label>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Product</label>
                     <select 
                       value={newBatch.product_id}
                       onChange={(e) => setNewBatch({ ...newBatch, product_id: parseInt(e.target.value, 10) })}
@@ -752,18 +752,18 @@ export default function AdminDashboard() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-veltrix-text-muted uppercase mb-1">Identificador do Lote</label>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Batch Identifier</label>
                     <input 
                       type="text" 
                       required
-                      placeholder="Ex: LOT-GHK-2026E"
+                      placeholder="Ex: LOT-RET-2026B"
                       value={newBatch.batch_number}
                       onChange={(e) => setNewBatch({ ...newBatch, batch_number: e.target.value.toUpperCase() })}
                       className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3 uppercase font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-veltrix-text-muted uppercase mb-1">Quantidade de Códigos a Gerar</label>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Number of Codes to Generate</label>
                     <input 
                       type="number" 
                       min="5"
@@ -772,7 +772,7 @@ export default function AdminDashboard() {
                       onChange={(e) => setNewBatch({ ...newBatch, quantity: parseInt(e.target.value, 10) || 10 })}
                       className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3"
                     />
-                    <span className="text-[10px] text-veltrix-text-muted mt-1 block">Cada código receberá formato alfanumérico seguro XXX-XXX-XXX.</span>
+                    <span className="text-[10px] text-veltrix-text-muted mt-1 block">Each security code will be generated as a 6-character alphanumeric key (e.g., 2H7MBT).</span>
                   </div>
                   <div className="flex justify-end gap-3 mt-4">
                     <button 
@@ -780,10 +780,10 @@ export default function AdminDashboard() {
                       onClick={() => setShowBatchModal(false)}
                       className="px-4 py-2 border border-veltrix-border-2 text-veltrix-text-muted hover:bg-veltrix-light-2"
                     >
-                      Cancelar
+                      Cancel
                     </button>
                     <button type="submit" className="btn-gold flex items-center gap-2">
-                      <Layers size={14} /> Gerar e Salvar no Neon
+                      <Layers size={14} /> Generate & Save to Neon
                     </button>
                   </div>
                 </form>
@@ -792,7 +792,7 @@ export default function AdminDashboard() {
           )}
         </AnimatePresence>
 
-        {/* MODAL: VER CÓDIGOS DO LOTE */}
+        {/* MODAL: VIEW BATCH CODES */}
         <AnimatePresence>
           {showCodesModal && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
@@ -808,9 +808,9 @@ export default function AdminDashboard() {
                 >
                   <X size={20} />
                 </button>
-                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-1">Códigos do Lote {selectedBatchNumber}</h3>
+                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-1">Batch Codes - {selectedBatchNumber}</h3>
                 <p className="text-xs text-veltrix-text-gray font-mono mb-6">
-                  {selectedBatchCodes.length} códigos carregados do Neon PostgreSQL. Clique para copiar.
+                  {selectedBatchCodes.length} codes loaded from Neon PostgreSQL. Click any code to copy.
                 </p>
 
                 <div className="flex-grow overflow-y-auto pr-2 grid grid-cols-2 md:grid-cols-3 gap-2.5 font-mono text-xs">
@@ -823,7 +823,7 @@ export default function AdminDashboard() {
                       <div>
                         <span className="font-bold text-veltrix-dark-3 block">{c.code}</span>
                         <span className="text-[9px] text-veltrix-text-muted">
-                          {c.times_checked === 0 ? 'Não consultado' : `${c.times_checked}x consultado`}
+                          {c.times_checked === 0 ? 'Unused' : `Checked ${c.times_checked}x`}
                         </span>
                       </div>
                       {copiedCode === c.code ? (
@@ -836,13 +836,13 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-veltrix-border-2 flex justify-between items-center text-xs font-mono">
-                  <span className="text-veltrix-text-muted">Copie qualquer código e teste na página de Autenticação.</span>
+                  <span className="text-veltrix-text-muted">Copy any code to test on the official Authentication page.</span>
                   <Link 
                     to="/autenticacao" 
                     target="_blank" 
                     className="flex items-center gap-1.5 text-veltrix-gold-5 font-bold hover:underline"
                   >
-                    Testar Validador <ArrowUpRight size={14} />
+                    Test Validator <ArrowUpRight size={14} />
                   </Link>
                 </div>
               </motion.div>

@@ -16,8 +16,8 @@ productsRouter.get('/', async (req: Request, res: Response) => {
     const result = await query(sql);
     return res.json(result.rows);
   } catch (error: any) {
-    console.error('Erro ao listar produtos:', error);
-    return res.status(500).json({ error: 'Erro ao buscar catálogo de produtos.' });
+    console.error('Error listing products:', error);
+    return res.status(500).json({ error: 'Failed to retrieve product catalog.' });
   }
 });
 
@@ -33,13 +33,13 @@ productsRouter.get('/:id', async (req: Request, res: Response) => {
 
     const result = await query(sql, [isNumeric ? parseInt(id, 10) : id]);
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado.' });
+      return res.status(404).json({ error: 'Product not found.' });
     }
 
     return res.json(result.rows[0]);
   } catch (error: any) {
-    console.error('Erro ao buscar produto:', error);
-    return res.status(500).json({ error: 'Erro ao carregar detalhes do produto.' });
+    console.error('Error fetching product:', error);
+    return res.status(500).json({ error: 'Failed to load product details.' });
   }
 });
 
@@ -51,7 +51,7 @@ productsRouter.post('/', async (req: Request, res: Response) => {
       slug,
       concentration,
       formula,
-      category = 'Peptídeos',
+      category = 'Peptides',
       purity = '≥ 99.0% HPLC',
       description,
       presentations,
@@ -59,7 +59,7 @@ productsRouter.post('/', async (req: Request, res: Response) => {
     } = req.body;
 
     if (!name || !slug) {
-      return res.status(400).json({ error: 'Nome e slug são obrigatórios.' });
+      return res.status(400).json({ error: 'Name and slug are required.' });
     }
 
     const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9-]/g, '-');
@@ -73,11 +73,11 @@ productsRouter.post('/', async (req: Request, res: Response) => {
 
     return res.status(201).json(result.rows[0]);
   } catch (error: any) {
-    console.error('Erro ao criar produto:', error);
+    console.error('Error creating product:', error);
     if (error.code === '23505') {
-      return res.status(409).json({ error: 'Já existe um produto com este slug.' });
+      return res.status(409).json({ error: 'A product with this slug already exists.' });
     }
-    return res.status(500).json({ error: 'Falha ao salvar produto no Neon PostgreSQL.' });
+    return res.status(500).json({ error: 'Failed to save product in Neon database.' });
   }
 });
 
@@ -117,13 +117,13 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado.' });
+      return res.status(404).json({ error: 'Product not found.' });
     }
 
     return res.json(result.rows[0]);
   } catch (error: any) {
-    console.error('Erro ao atualizar produto:', error);
-    return res.status(500).json({ error: 'Falha ao atualizar produto.' });
+    console.error('Error updating product:', error);
+    return res.status(500).json({ error: 'Failed to update product.' });
   }
 });
 
@@ -133,11 +133,11 @@ productsRouter.delete('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await query('DELETE FROM products WHERE id = $1 RETURNING id, name;', [id]);
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado.' });
+      return res.status(404).json({ error: 'Product not found.' });
     }
-    return res.json({ message: 'Produto removido com sucesso.', product: result.rows[0] });
+    return res.json({ message: 'Product deleted successfully.', product: result.rows[0] });
   } catch (error: any) {
-    console.error('Erro ao excluir produto:', error);
-    return res.status(500).json({ error: 'Falha ao excluir produto.' });
+    console.error('Error deleting product:', error);
+    return res.status(500).json({ error: 'Failed to delete product.' });
   }
 });

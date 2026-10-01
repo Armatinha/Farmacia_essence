@@ -2,7 +2,7 @@
   "version": 1,
   "type": "site",
   "level": "avancado",
-  "current": 8,
+  "current": 18,
   "completed": {
     "p1": {
       "status": "feito",
@@ -26,12 +26,62 @@
     },
     "p6": {
       "status": "feito",
-      "note": "Telas detalhadas com os 3 estados visuais de feedback e painel de CRUD de produtos e lotes."
+      "note": "Telas detalhadas com os 3 estados visuais de feedback e APP_FLOW.md consolidado."
     },
     "p7": {
       "status": "feito",
-      "note": "Estrutura relacional básica com `products`, `codes` e log de checagem. PRD criado."
+      "note": "Estrutura relacional, PRD.md, TRD.md, IMPLEMENTATION_PLAN.md e TESTING.md consolidados."
+    },
+    "b1": {
+      "status": "feito",
+      "note": "Design System Veltrix Light Luxury documentado em DESIGN_SYSTEM.md com emblema oficial Essence."
+    },
+    "b2": {
+      "status": "feito",
+      "note": "Frontend construído em React 19 + Tailwind v4; internacionalização em EN/ES sem português; CODE_STYLE.md finalizado."
+    },
+    "b3": {
+      "status": "feito",
+      "note": "Arquitetura e banco de dados Neon PostgreSQL 18 documentados em ARCHITECTURE.md e DATABASE.md."
+    },
+    "b4": {
+      "status": "feito",
+      "note": "API REST e procedure atômica verify_product_code com FOR UPDATE documentadas em API_GUIDE.md."
+    },
+    "b5": {
+      "status": "feito",
+      "note": "Integração do código alfanumérico unívoco de 6 caracteres (ex: 2H7MBT) e fallback offline de segurança."
+    },
+    "b6": {
+      "status": "feito",
+      "note": "Testes de build TypeScript e Vite bem-sucedidos; AGENTS.md e governança de continuidade ativos."
+    },
+    "s1": {
+      "status": "feito",
+      "note": "Mapeamento de riscos de contrafação e modelo de segurança em SECURITY.md."
+    },
+    "s2": {
+      "status": "feito",
+      "note": "Autenticação administrativa, sessões via token e isolamento de rotas de mutação."
+    },
+    "s3": {
+      "status": "feito",
+      "note": "Proteção de segredos em variáveis de ambiente (.env), HTTPS e headers no-cache."
+    },
+    "s4": {
+      "status": "feito",
+      "note": "Verificação atômica concorrente com row-level locking e revogação de lotes em tempo real."
+    },
+    "l1": {
+      "status": "feito",
+      "note": "Checklist de publicação 18-publicacao.md concluído com aprovação total dos requisitos."
     }
   },
-  "checks": {}
+  "checks": {
+    "build": true,
+    "zero_portuguese_ui": true,
+    "six_char_alphanumeric_codes": true,
+    "neon_postgres_connected": true,
+    "ready_for_production": true
+  }
 }

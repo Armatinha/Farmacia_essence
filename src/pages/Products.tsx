@@ -25,10 +25,10 @@ const initialProducts: ProductItem[] = [
     name: 'RETATRUTIDE',
     concentration: '40 mg',
     formula: 'ESS-R40',
-    category: 'Peptídeos',
+    category: 'Peptides',
     purity: '≥ 99.4% HPLC',
-    description: 'Retatrutida - Triplo agonista (GLP-1, GIP, Glucagon). Pó liofilizado de grau de pesquisa.',
-    presentations: 'Liofilizado · Caneta injetável',
+    description: 'Retatrutide - Triple receptor agonist (GLP-1, GIP, Glucagon). Research-grade lyophilized powder.',
+    presentations: 'Lyophilized powder · Dosing pen',
     image_url: vialsImage
   },
   {
@@ -36,10 +36,10 @@ const initialProducts: ProductItem[] = [
     name: 'TIRZEPATIDE',
     concentration: '15 mg / 75 mg',
     formula: 'ESS-T75',
-    category: 'Metabólico',
+    category: 'Metabolic',
     purity: '≥ 99.2% HPLC',
-    description: 'Tirzepatida - Duplo agonista (GLP-1 / GIP). Apresentação em frasco e caneta dosadora de precisão.',
-    presentations: 'Caneta dosadora 75mg · Frasco liofilizado 15mg',
+    description: 'Tirzepatide - Dual GIP/GLP-1 receptor agonist. Available in precision dosing pen and lyophilized vial.',
+    presentations: 'Precision pen 75mg · Lyophilized vial 15mg',
     image_url: penBoxImage
   },
   {
@@ -47,10 +47,10 @@ const initialProducts: ProductItem[] = [
     name: 'SEMAGLUTIDE',
     concentration: '10 mg',
     formula: 'ESS-S10',
-    category: 'Peptídeos',
+    category: 'Peptides',
     purity: '≥ 99.1% HPLC',
-    description: 'Semaglutida - Agonista do receptor GLP-1 para estudos de modulação metabólica e controle glicêmico.',
-    presentations: 'Liofilizado · Frasco de vidro hermético',
+    description: 'Semaglutide - GLP-1 receptor agonist engineered for metabolic modulation and glycemic research.',
+    presentations: 'Lyophilized · Sealed glass vial',
     image_url: vialsImage
   },
   {
@@ -58,10 +58,10 @@ const initialProducts: ProductItem[] = [
     name: 'BPC-157',
     concentration: '10 mg',
     formula: 'ESS-B10',
-    category: 'Regenerativo',
+    category: 'Regenerative',
     purity: '≥ 99.0% HPLC',
-    description: 'Composto peptídico de proteção gástrica e regeneração de tecidos e tendões.',
-    presentations: 'Liofilizado · Selo de autenticidade holográfico',
+    description: 'BPC-157 - Body Protection Compound peptide for cellular integrity and tissue repair protocols.',
+    presentations: 'Lyophilized · Holographic security seal',
     image_url: sealsImage
   },
   {
@@ -69,10 +69,10 @@ const initialProducts: ProductItem[] = [
     name: 'IPAMORELIN',
     concentration: '5 mg',
     formula: 'ESS-I5',
-    category: 'Secretagogos',
+    category: 'Secretagogues',
     purity: '≥ 99.0% HPLC',
-    description: 'Pentapeptídeo mimético com alta seletividade na estimulação e recuperação celular.',
-    presentations: 'Liofilizado · Grau de pesquisa avançado',
+    description: 'Ipamorelin - Selective growth hormone secretagogue pentapeptide for advanced cellular research.',
+    presentations: 'Lyophilized · Ultra-pure research grade',
     image_url: vialsImage
   }
 ];
@@ -85,7 +85,7 @@ export default function Products() {
     fetch('/api/products')
       .then((res) => {
         if (res.ok) return res.json();
-        throw new Error('Falha ao carregar produtos');
+        throw new Error('Failed to load products');
       })
       .then((data: ProductItem[]) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -93,7 +93,7 @@ export default function Products() {
         }
       })
       .catch((err) => {
-        console.warn('Usando catálogo inicial local:', err);
+        console.warn('Using local fallback catalog:', err);
       });
   }, []);
 
@@ -137,7 +137,7 @@ export default function Products() {
                   {product.purity || '≥ 99.0%'}
                 </span>
                 <span className="absolute bottom-4 right-4 bg-veltrix-gold-1 text-veltrix-dark-3 px-2 py-1 font-mono text-[9px] font-bold">
-                  {product.category || 'Peptídeos'}
+                  {product.category || 'Peptides'}
                 </span>
               </div>
               

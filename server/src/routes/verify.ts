@@ -35,7 +35,7 @@ verifyRouter.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         status: 'INVALID_REQUEST',
-        message: 'Código de verificação não informado.'
+        message: 'Verification code not provided.'
       });
     }
 
@@ -56,7 +56,7 @@ verifyRouter.post('/', async (req: Request, res: Response) => {
       return res.status(500).json({
         success: false,
         status: 'INTERNAL_ERROR',
-        message: 'Erro ao processar verificação de autenticidade.'
+        message: 'Failed to process authenticity verification.'
       });
     }
 
@@ -65,11 +65,11 @@ verifyRouter.post('/', async (req: Request, res: Response) => {
 
     return res.status(200).json(verificationResult);
   } catch (error: any) {
-    console.error('❌ Erro na verificação de código:', error);
+    console.error('❌ Error verifying product code:', error);
     return res.status(500).json({
       success: false,
       status: 'SERVER_ERROR',
-      message: 'Ocorreu uma falha temporária ao consultar o banco de segurança Neon.',
+      message: 'A temporary error occurred while querying the security database.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }

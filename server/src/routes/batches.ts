@@ -4,17 +4,15 @@ import { query, pool } from '../db.js';
 
 export const batchesRouter = Router();
 
-// Helper to generate secure alphanumeric pharma code format: XXX-XXX-XXX
+// Helper to generate secure 6-character alphanumeric pharma code (e.g. 2H7MBT)
 function generatePharmaCode(): string {
   const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // exclude ambiguous characters: 0, 1, I, O
-  let part1 = '';
-  let part2 = '';
-  let part3 = '';
-  const bytes = crypto.randomBytes(9);
-  for (let i = 0; i < 3; i++) part1 += chars[bytes[i] % chars.length];
-  for (let i = 3; i < 6; i++) part2 += chars[bytes[i] % chars.length];
-  for (let i = 6; i < 9; i++) part3 += chars[bytes[i] % chars.length];
-  return `${part1}-${part2}-${part3}`;
+  let code = '';
+  const bytes = crypto.randomBytes(6);
+  for (let i = 0; i < 6; i++) {
+    code += chars[bytes[i] % chars.length];
+  }
+  return code;
 }
 
 // GET /api/batches - List all batches with stats
@@ -46,8 +44,8 @@ batchesRouter.get('/', async (req: Request, res: Response) => {
 
     return res.json(result.rows);
   } catch (error: any) {
-    console.error('Erro ao listar lotes:', error);
-    return res.status(500).json({ error: 'Erro ao buscar lotes no Neon PostgreSQL.' });
+    console.error('Error listing batches:', error);
+    return res.status(500).json({ error: 'Failed to retrieve batches from Neon PostgreSQL.' });
   }
 });
 
@@ -68,13 +66,13 @@ batchesRouter.get('/:id', async (req: Request, res: Response) => {
     `, [id]);
 
     if (batchResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Lote não encontrado.' });
+      return res.status(404).json({ error: 'Batch not found.' });
     }
 
     return res.json(batchResult.rows[0]);
   } catch (error: any) {
-    console.error('Erro ao buscar detalhes do lote:', error);
-    return res.status(500).json({ error: 'Falha ao buscar lote.' });
+    console.error('Error fetching batch details:', error);
+    return res.status(500).json({ error: 'Failed to retrieve batch details.' });
   }
 });
 
@@ -104,8 +102,8 @@ batchesRouter.get('/:id/codes', async (req: Request, res: Response) => {
       codes: codesResult.rows
     });
   } catch (error: any) {
-    console.error('Erro ao buscar códigos do lote:', error);
-    return res.status(500).json({ error: 'Falha ao buscar códigos do lote.' });
+    console.error('Error fetching batch codes:', error);
+    return res.status(500).json({ error: 'Failed to retrieve batch security codes.' });
   }
 });
 
@@ -123,7 +121,7 @@ batchesRouter.post('/generate', async (req: Request, res: Response) => {
     } = req.body;
 
     if (!batch_number || !product_id) {
-      return res.status(400).json({ error: 'batch_number e product_id são obrigatórios.' });
+      return res.status(400).json({ error: 'batch_number and product_id are required fields.' });
     }
 
     const numCodes = Math.min(Math.max(parseInt(quantity, 10) || 10, 1), 5000);
@@ -175,17 +173,17 @@ batchesRouter.post('/generate', async (req: Request, res: Response) => {
     await client.query('COMMIT');
 
     return res.status(201).json({
-      message: `Lote ${batch_number} criado com sucesso com ${codesArray.length} códigos de segurança.`,
+      message: `Batch ${batch_number} created successfully with ${codesArray.length} security codes.`,
       batch: newBatch,
       sample_codes: codesArray.slice(0, 5)
     });
   } catch (error: any) {
     await client.query('ROLLBACK');
-    console.error('Erro ao gerar lote e códigos:', error);
+    console.error('Error generating batch and codes:', error);
     if (error.code === '23505') {
-      return res.status(409).json({ error: 'Já existe um lote com este número de lote.' });
+      return res.status(409).json({ error: 'A batch with this identifier already exists.' });
     }
-    return res.status(500).json({ error: 'Falha ao gerar lote no banco Neon.' });
+    return res.status(500).json({ error: 'Failed to generate batch in Neon database.' });
   } finally {
     client.release();
   }
@@ -203,12 +201,12 @@ batchesRouter.patch('/:id/toggle', async (req: Request, res: Response) => {
     `, [id]);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Lote não encontrado.' });
+      return res.status(404).json({ error: 'Batch not found.' });
     }
 
     return res.json(result.rows[0]);
   } catch (error: any) {
-    console.error('Erro ao alterar status do lote:', error);
-    return res.status(500).json({ error: 'Falha ao atualizar lote.' });
+    console.error('Error toggling batch status:', error);
+    return res.status(500).json({ error: 'Failed to update batch status.' });
   }
 });

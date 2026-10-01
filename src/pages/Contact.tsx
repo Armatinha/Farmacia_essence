@@ -135,9 +135,9 @@ export default function Contact() {
                   aria-live="polite"
                 >
                   <CheckCircle2 size={48} className="text-veltrix-gold-1 mb-6" />
-                  <h4 className="font-display text-3xl text-veltrix-light-5 mb-2">Mensagem Enviada</h4>
+                  <h4 className="font-display text-3xl text-veltrix-light-5 mb-2">{t('contact.successTitle')}</h4>
                   <p className="text-veltrix-text-muted text-sm leading-relaxed max-w-xs">
-                    Nossa equipe técnica entrará em contato em breve. Agradecemos o interesse.
+                    {t('contact.successDesc')}
                   </p>
                 </motion.div>
               )}
