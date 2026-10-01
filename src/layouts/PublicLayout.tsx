@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import '../i18n';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CookieBanner from '../components/CookieBanner';
