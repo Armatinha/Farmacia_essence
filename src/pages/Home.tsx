@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, Microscope, FileCheck, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import heroImage from '../assets/hero.png';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -36,13 +37,13 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }} className="relative">
             <div className="absolute -inset-8 border border-veltrix-gold-1/25 translate-x-6 translate-y-6"></div>
             <img 
-              alt="Oxygen Labs packaging mockup" 
+              alt="Essence Labs packaging mockup" 
               className="relative w-full h-[420px] lg:h-[550px] object-cover object-center shadow-[0_35px_80px_rgba(20,20,28,.18)]" 
-              src="https://veltrix.cidadeinter.com.br/assets/veltrix-hero-box-Dsx4iOwY.jpg" 
+              src={heroImage}
             />
             
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.8 }} className="absolute -bottom-5 -left-5 bg-veltrix-gold-1 p-5 w-40 text-veltrix-dark-3 shadow-lg">
-              <span className="font-mono text-[9px] tracking-widest">OXY / 001</span>
+              <span className="font-mono text-[9px] tracking-widest">ESS / 001</span>
               <p className="font-display text-lg tracking-tight leading-tight mt-2">{t('home.verifyTag')}</p>
             </motion.div>
           </motion.div>

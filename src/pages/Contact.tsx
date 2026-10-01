@@ -48,8 +48,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="font-display text-xl tracking-tight text-veltrix-dark-3 mb-1">{t('contact.emailTitle')}</h4>
-                  <a href="mailto:support@oxygenpharma.com" className="text-sm font-mono text-veltrix-text-gray hover:text-veltrix-gold-1 transition-colors">
-                    support@oxygenpharma.com
+                  <a href="mailto:support@essencepharma.com" className="text-sm font-mono text-veltrix-text-gray hover:text-veltrix-gold-1 transition-colors">
+                    support@essencepharma.com
                   </a>
                 </div>
               </div>

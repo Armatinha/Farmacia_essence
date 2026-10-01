@@ -1,32 +1,63 @@
-# React + TypeScript + Vite
+# Essence Pharma & Oxygen KW - Sistema de Autenticação & Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Sistema completo institucional e antifraude para autenticação de produtos farmacêuticos e peptídeos, com painel administrativo e backend integrado ao **Neon Serverless PostgreSQL 18** via MCP.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Como Executar
 
-## React Compiler
+### 1. Executar Frontend + Backend juntos
+```bash
+npm run dev:all
+```
+- **Frontend Vite:** `http://localhost:5173`
+- **Backend API:** `http://localhost:3001`
+- **Painel Administrativo:** `http://localhost:5173/admin`
+- **Autenticação Pública:** `http://localhost:5173/autenticacao`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### 2. Executar Apenas o Backend
+```bash
+npm run server
+# ou com auto-reload em desenvolvimento:
+npm run server:dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 3. Re-popular o Banco de Dados Neon (Seed)
+```bash
+npm run db:seed
+```
+
+---
+
+## 🗄️ Integração com Neon PostgreSQL (MCP)
+
+O banco de dados foi provisionado e gerenciado via **MCP Neon**:
+- **Projeto Neon:** `Farmacia_essence` (`square-unit-25518658`)
+- **Região:** AWS São Paulo (`aws-sa-east-1`)
+- **Versão:** PostgreSQL 18
+- **Procedure Atômica:** `verify_product_code(...)` com bloqueio `FOR UPDATE` para contadores de checagem concorrentes e telemetria de fraudes.
+
+---
+
+## 📡 Endpoints da API REST
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| `GET` | `/api/health` | Status do servidor e conectividade com o Neon DB |
+| `POST` | `/api/verify` | Validação de autenticidade (`{ "code": "VALIDO1" }`) |
+| `GET` | `/api/products` | Catálogo de compostos ativos |
+| `POST` | `/api/products` | Cadastro de novo produto (Admin) |
+| `GET` | `/api/batches` | Listagem de lotes com estatísticas |
+| `POST` | `/api/batches/generate` | Geração em massa de lotes e códigos de segurança |
+| `GET` | `/api/batches/:id/codes` | Visualização de códigos gerados para um lote |
+| `GET` | `/api/telemetry/metrics` | Métricas de telemetria em tempo real |
+| `GET` | `/api/telemetry/logs` | Log completo de consultas realizadas |
+| `POST` | `/api/auth/login` | Login de administradores |
+
+---
+
+## 🔑 Códigos de Demonstração Pré-Cadastrados
+- `VALIDO1`: Produto autêntico para 1ª verificação.
+- `USADO2`: Código autêntico com alerta de reutilização anterior.
+- `XY9-8L4-ZQX`: Lote clínico de RETAGEN.
+- `A72-9B1-XXX`: Lote de TIRZEGEN.

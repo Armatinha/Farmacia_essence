@@ -12,7 +12,7 @@ export default function Footer() {
               <path d="M14 6h7l5 9 4-7h8L22 35l-4-7 8-13-5-9h-7Z" fill="#c29a48"></path>
             </svg>
             <div>
-              <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">OXYGEN</div>
+              <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">ESSENCE</div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="h-px w-5 bg-veltrix-gold-1"></span>
                 <span className="text-[8px] tracking-[.3em] text-veltrix-border-1">PHARMA</span>
@@ -41,8 +41,8 @@ export default function Footer() {
               <ShieldCheck size={16} />
               Verificação de Autenticidade
             </Link>
-            <a href="mailto:support@oxygenpharma.com" className="block py-1.5 text-sm text-veltrix-border-1 hover:text-veltrix-gold-2">
-              support@oxygenpharma.com
+            <a href="mailto:support@essencepharma.com" className="block py-1.5 text-sm text-veltrix-border-1 hover:text-veltrix-gold-2">
+              support@essencepharma.com
             </a>
             <p className="text-sm text-veltrix-border-1 mt-2">
               Seg–Sex · 09:00–17:00
@@ -52,7 +52,7 @@ export default function Footer() {
       </div>
 
       <div className="container-v relative z-10 mt-14 pt-6 border-t border-veltrix-dark-4 flex flex-wrap gap-4 justify-between text-[9px] tracking-wider uppercase text-gray-500">
-        <span>© {new Date().getFullYear()} Oxygen Pharma</span>
+        <span>© {new Date().getFullYear()} Essence Pharma</span>
         <span>Apenas para fins de pesquisa · Não para consumo humano</span>
       </div>
     </footer>

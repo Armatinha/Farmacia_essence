@@ -1,9 +1,23 @@
+import { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import heroImage from '../assets/hero.png';
 
-const products = [
+interface ProductItem {
+  id: number;
+  name: string;
+  concentration?: string;
+  formula?: string;
+  category?: string;
+  purity?: string;
+  description?: string;
+  presentations?: string;
+  image_url?: string;
+}
+
+const initialProducts: ProductItem[] = [
   {
     id: 1,
     name: 'GHK-Cu',
@@ -48,6 +62,23 @@ const products = [
 
 export default function Products() {
   const { t } = useTranslation();
+  const [productList, setProductList] = useState<ProductItem[]>(initialProducts);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error('Falha ao carregar produtos');
+      })
+      .then((data: ProductItem[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setProductList(data);
+        }
+      })
+      .catch((err) => {
+        console.warn('Usando catálogo inicial local:', err);
+      });
+  }, []);
 
   return (
     <div className="bg-veltrix-light-1 min-h-screen">
@@ -68,7 +99,7 @@ export default function Products() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {products.map((product, index) => (
+          {productList.map((product, index) => (
             <motion.article 
               initial={{ opacity: 0, y: 30 }} 
               whileInView={{ opacity: 1, y: 0 }} 
@@ -81,19 +112,15 @@ export default function Products() {
                 <img 
                   alt={product.name} 
                   className="w-full h-full object-cover grayscale-[.08] group-hover:scale-[1.03] transition-transform duration-700" 
-                  src={
-                    product.id % 2 === 0 
-                      ? "https://veltrix.cidadeinter.com.br/assets/veltrix-pens-XEO0bia-.jpg"
-                      : "https://veltrix.cidadeinter.com.br/assets/veltrix-box-detail-BeErPC1r.jpg"
-                  } 
+                  src={product.image_url || heroImage} 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-veltrix-dark-1/30 to-transparent"></div>
                 
                 <span className="absolute top-4 left-4 bg-veltrix-light-1/95 px-3 py-1.5 font-mono text-[9px] font-bold border border-veltrix-border-1">
-                  {product.purity}
+                  {product.purity || '≥ 99.0%'}
                 </span>
                 <span className="absolute bottom-4 right-4 bg-veltrix-gold-1 text-veltrix-dark-3 px-2 py-1 font-mono text-[9px] font-bold">
-                  {product.category}
+                  {product.category || 'Peptídeos'}
                 </span>
               </div>
               

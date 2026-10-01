@@ -33,7 +33,7 @@ export default function Navbar() {
             </svg>
           </div>
           <div>
-            <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-dark-3">OXYGEN</div>
+            <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-dark-3">ESSENCE</div>
             <div className="mt-1 flex items-center gap-2">
               <span className="h-px w-5 bg-veltrix-gold-1"></span>
               <span className="text-[8px] tracking-[.3em] text-veltrix-text-dark">PHARMA</span>
@@ -70,12 +70,6 @@ export default function Navbar() {
               className={`px-2.5 py-1.5 cursor-pointer transition-colors ${i18n.language === 'es' ? 'bg-veltrix-dark-2 text-veltrix-light-5' : 'text-veltrix-dark-3 hover:text-veltrix-gold-1'}`}
             >
               ES
-            </button>
-            <button 
-              onClick={() => changeLanguage('pt')}
-              className={`px-2.5 py-1.5 cursor-pointer transition-colors ${i18n.language === 'pt' ? 'bg-veltrix-dark-2 text-veltrix-light-5' : 'text-veltrix-dark-3 hover:text-veltrix-gold-1'}`}
-            >
-              PT
             </button>
           </div>
           <Link to="/autenticacao" className="hidden md:flex items-center gap-2 bg-veltrix-gold-1 text-veltrix-dark-3 px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider hover:bg-veltrix-gold-3 transition-colors">
