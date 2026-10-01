@@ -25,7 +25,6 @@ import {
   FileText,
   Image as ImageIcon
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import essenceEmblem from '../assets/essence-emblem.webp';
 
 type TabType = 'telemetry' | 'products' | 'batches';
@@ -796,7 +795,7 @@ export default function AdminDashboard() {
 
         {/* TAB 2: PRODUCTS */}
         {activeTab === 'products' && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {products.map((p) => (
                 <div key={p.id} className="bg-veltrix-light-3 border border-veltrix-border-2 p-6 flex flex-col justify-between shadow-xs card-lift">
@@ -846,12 +845,12 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* TAB 3: BATCHES */}
         {activeTab === 'batches' && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <div>
             <div className="bg-veltrix-light-3 border border-veltrix-border-2 overflow-hidden shadow-xs">
               <div className="px-8 py-6 border-b border-veltrix-border-2 bg-veltrix-light-2">
                 <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Registered Production Batches</h3>
@@ -917,20 +916,14 @@ export default function AdminDashboard() {
                 </table>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* MODAL: NEW PRODUCT */}
-        <AnimatePresence>
-          {showProductModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto"
-              >
-                <button 
+        {showProductModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+              <button 
                   onClick={() => setShowProductModal(false)}
                   className="absolute right-5 top-5 text-veltrix-text-muted hover:text-veltrix-dark-3"
                 >
@@ -1130,22 +1123,15 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </div>
             </div>
           )}
-        </AnimatePresence>
 
         {/* MODAL: GENERATE NEW BATCH */}
-        <AnimatePresence>
-          {showBatchModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-lg w-full shadow-2xl relative"
-              >
-                <button 
+        {showBatchModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-lg w-full shadow-2xl relative">
+              <button 
                   onClick={() => setShowBatchModal(false)}
                   className="absolute right-5 top-5 text-veltrix-text-muted hover:text-veltrix-dark-3"
                 >
@@ -1203,22 +1189,15 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </div>
             </div>
           )}
-        </AnimatePresence>
 
         {/* MODAL: VIEW BATCH CODES */}
-        <AnimatePresence>
-          {showCodesModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-2xl w-full shadow-2xl relative max-h-[85vh] flex flex-col"
-              >
-                <button 
+        {showCodesModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-2xl w-full shadow-2xl relative max-h-[85vh] flex flex-col">
+              <button 
                   onClick={() => setShowCodesModal(false)}
                   className="absolute right-5 top-5 text-veltrix-text-muted hover:text-veltrix-dark-3"
                 >
@@ -1279,22 +1258,15 @@ export default function AdminDashboard() {
                     Test Validator <ArrowUpRight size={14} />
                   </Link>
                 </div>
-              </motion.div>
+              </div>
             </div>
           )}
-        </AnimatePresence>
 
         {/* MODAL: SPREADSHEET / CSV BULK IMPORT */}
-        <AnimatePresence>
-          {showImportModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }} 
-                animate={{ opacity: 1, scale: 1 }} 
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto"
-              >
-                <button 
+        {showImportModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+              <button 
                   onClick={() => setShowImportModal(false)}
                   className="absolute right-5 top-5 text-veltrix-text-muted hover:text-veltrix-dark-3"
                 >
@@ -1399,10 +1371,9 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </div>
             </div>
           )}
-        </AnimatePresence>
 
       </main>
     </div>

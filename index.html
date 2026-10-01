@@ -43,8 +43,18 @@
     <!-- ─── Sitemap hint ─── -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
-    <!-- ─── Hero Image Preload for Instant LCP ─── -->
-    <link rel="preload" as="image" href="/essence-pen-box.webp" type="image/webp" fetchpriority="high" />
+    <!-- ─── Hero Image Preload for Instant Public LCP ─── -->
+    <script>
+      if (!window.location.pathname.startsWith('/admin')) {
+        const l = document.createElement('link');
+        l.rel = 'preload';
+        l.as = 'image';
+        l.href = '/essence-pen-box.webp';
+        l.type = 'image/webp';
+        l.fetchPriority = 'high';
+        document.head.appendChild(l);
+      }
+    </script>
 
     <!-- ─── Critical CSS for Fast First Paint (FCP) ─── -->
     <style>
