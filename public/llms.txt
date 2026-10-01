@@ -1,0 +1,18 @@
+# Essence Pharma
+
+> Essence Pharma delivers premium pharmaceutical compounds with complete batch traceability, HPLC-verified purity ≥99%, and a public anti-counterfeiting digital verification system.
+
+## Core Navigation
+
+- [Home](https://essencepharmalab.com/): Official pharmaceutical overview and science portal.
+- [Verify Authenticity](https://essencepharmalab.com/autenticacao): Public digital verification system for 6-character alphanumeric scratch-off security codes.
+- [Products Catalog](https://essencepharmalab.com/produtos): Complete directory of pharmaceutical formulations, verified presentations, and compound specifications.
+- [About Us](https://essencepharmalab.com/sobre): Laboratory synthesis standards, quality assurance, and verification philosophy.
+- [Contact Support](https://essencepharmalab.com/contato): Direct channel for technical inquiries and commercial authentication.
+- [Admin Console](https://essencepharmalab.com/admin): Batch management, telemetry, and fraud monitoring console.
+
+## API & Agent Resources
+
+- [Verification Endpoint](https://essencepharmalab.com/api/verify): POST endpoint accepting a 6-character alphanumeric security code for instant cryptographic validation.
+- [OpenAPI Specification](https://essencepharmalab.com/openapi.json): Standard OpenAPI documentation for pharmaceutical registry queries.
+- [Agentic Resource Discovery](https://essencepharmalab.com/ai-catalog.json): Machine-readable ARD catalog for AI agents.

@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Essence Pharma Verification API",
+    "version": "1.0.0",
+    "description": "Public verification API for 6-character alphanumeric authenticity codes."
+  },
+  "servers": [
+    {
+      "url": "https://essencepharmalab.com/api"
+    }
+  ],
+  "paths": {
+    "/verify": {
+      "post": {
+        "summary": "Verify 6-character product authenticity code",
+        "operationId": "verifyCode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 6,
+                    "example": "2H7MBT"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "valid": { "type": "boolean" },
+                    "status": { "type": "string" },
+                    "product": { "type": "object" },
+                    "batch": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

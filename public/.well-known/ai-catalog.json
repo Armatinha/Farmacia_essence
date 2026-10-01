@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "host": "https://essencepharmalab.com",
+  "name": "Essence Pharma Security Core & Compound Registry",
+  "description": "Pharmaceutical compound catalog, batch traceability registry, and public 6-character anti-counterfeiting validation engine.",
+  "catalog": [
+    {
+      "id": "verify-code",
+      "type": "api",
+      "url": "https://essencepharmalab.com/api/verify",
+      "description": "Validates single-use 6-character alphanumeric authenticity codes for Essence Pharma batches.",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "id": "products-api",
+      "type": "api",
+      "url": "https://essencepharmalab.com/api/products",
+      "description": "Lists pharmaceutical products, formulas, concentrations, and verified presentations.",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "id": "openapi-spec",
+      "type": "openapi",
+      "url": "https://essencepharmalab.com/openapi.json",
+      "description": "OpenAPI specification for Essence Pharma APIs."
+    }
+  ],
+  "resources": [
+    {
+      "name": "llms-txt",
+      "path": "/llms.txt",
+      "type": "text/markdown",
+      "description": "Context documentation for AI agents and LLM search systems."
+    },
+    {
+      "name": "sitemap",
+      "path": "/sitemap.xml",
+      "type": "application/xml",
+      "description": "Complete site map for indexation and discovery."
+    }
+  ]
+}
