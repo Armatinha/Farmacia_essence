@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block admin and API routes from indexing
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://essencepharma.com/sitemap.xml

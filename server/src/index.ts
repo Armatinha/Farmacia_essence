@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { checkNeonConnection, pool } from './db.js';
 import { verifyRouter } from './routes/verify.js';
 import { productsRouter } from './routes/products.js';
@@ -20,7 +21,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+
+// Serve custom product images
+app.use('/products', express.static(path.resolve(process.cwd(), 'public', 'products')));
 
 // Request logger
 app.use((req: Request, res: Response, next: NextFunction) => {

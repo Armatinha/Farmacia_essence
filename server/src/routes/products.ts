@@ -1,7 +1,47 @@
 import { Router, Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 import { query } from '../db.js';
 
 export const productsRouter = Router();
+
+// POST /api/products/upload-image - Upload product presentation photo
+productsRouter.post('/upload-image', async (req: Request, res: Response) => {
+  try {
+    const { filename, dataUrl } = req.body;
+    if (!dataUrl || !filename) {
+      return res.status(400).json({ error: 'dataUrl and filename are required.' });
+    }
+
+    const matches = dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Invalid data URL format.' });
+    }
+
+    const ext = path.extname(filename) || '.png';
+    const cleanBase = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const safeFilename = `${Date.now()}-${cleanBase}${ext}`;
+    const buffer = Buffer.from(matches[2], 'base64');
+
+    const publicDir = path.resolve(process.cwd(), 'public', 'products');
+    await fs.promises.mkdir(publicDir, { recursive: true });
+    await fs.promises.writeFile(path.join(publicDir, safeFilename), buffer);
+
+    const distDir = path.resolve(process.cwd(), 'dist', 'products');
+    if (fs.existsSync(path.resolve(process.cwd(), 'dist'))) {
+      await fs.promises.mkdir(distDir, { recursive: true });
+      await fs.promises.writeFile(path.join(distDir, safeFilename), buffer);
+    }
+
+    return res.json({
+      url: `/products/${safeFilename}`,
+      message: 'Product image uploaded successfully.'
+    });
+  } catch (error: any) {
+    console.error('Error saving uploaded product image:', error);
+    return res.status(500).json({ error: 'Failed to save product image.' });
+  }
+});
 
 // GET /api/products - List products
 productsRouter.get('/', async (req: Request, res: Response) => {

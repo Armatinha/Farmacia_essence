@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://essencepharma.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://essencepharma.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://essencepharma.com/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2026-10-01</lastmod>
+  </url>
+  <url>
+    <loc>https://essencepharma.com/sobre</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://essencepharma.com/sobre"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://essencepharma.com/sobre"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-10-01</lastmod>
+  </url>
+  <url>
+    <loc>https://essencepharma.com/produtos</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://essencepharma.com/produtos"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://essencepharma.com/produtos"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-10-01</lastmod>
+  </url>
+  <url>
+    <loc>https://essencepharma.com/autenticacao</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://essencepharma.com/autenticacao"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://essencepharma.com/autenticacao"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-10-01</lastmod>
+  </url>
+  <url>
+    <loc>https://essencepharma.com/contato</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://essencepharma.com/contato"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://essencepharma.com/contato"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2026-10-01</lastmod>
+  </url>
+</urlset>

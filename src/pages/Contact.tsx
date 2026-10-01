@@ -60,7 +60,13 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="font-display text-xl tracking-tight text-veltrix-dark-3 mb-1">{t('contact.wppTitle')}</h4>
-                  <a href="#" className="text-sm font-mono text-veltrix-text-gray hover:text-veltrix-gold-1 transition-colors">
+                  <a
+                    id="whatsapp-contact-link"
+                    href={`https://wa.me/${(import.meta.env.VITE_WHATSAPP_NUMBER ?? '').replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-mono text-veltrix-text-gray hover:text-veltrix-gold-1 transition-colors"
+                  >
                     {t('contact.wppDesc')}
                   </a>
                 </div>

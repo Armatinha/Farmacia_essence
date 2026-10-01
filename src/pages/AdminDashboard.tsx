@@ -22,7 +22,8 @@ import {
   Download,
   Trash2,
   FileSpreadsheet,
-  FileText
+  FileText,
+  Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import essenceEmblem from '../assets/essence-emblem.png';
@@ -97,6 +98,7 @@ export default function AdminDashboard() {
   // Products state
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
     slug: '',
@@ -150,7 +152,7 @@ export default function AdminDashboard() {
         setLogs(logsData.logs || []);
       }
     } catch (err) {
-      console.error('Error connecting to Neon backend:', err);
+      console.error('Error connecting to backend API:', err);
       setDbStatus('error');
     } finally {
       setLoading(false);
@@ -204,6 +206,42 @@ export default function AdminDashboard() {
     }
   };
 
+  // Upload product image file
+  const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setImageUploading(true);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const dataUrl = event.target?.result as string;
+      if (!dataUrl) {
+        setImageUploading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/products/upload-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: file.name, dataUrl })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setNewProduct((prev) => ({ ...prev, image_url: data.url }));
+        } else {
+          setNewProduct((prev) => ({ ...prev, image_url: dataUrl }));
+        }
+      } catch (err) {
+        console.error('Image upload server error, falling back to dataUrl:', err);
+        setNewProduct((prev) => ({ ...prev, image_url: dataUrl }));
+      } finally {
+        setImageUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Create product
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,7 +274,7 @@ export default function AdminDashboard() {
 
   // Delete product
   const handleDeleteProduct = async (id: number, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete compound "${name}" from Neon database?`)) {
+    if (!window.confirm(`Are you sure you want to delete compound "${name}"?`)) {
       return;
     }
     try {
@@ -279,7 +317,7 @@ export default function AdminDashboard() {
 
   // Delete batch
   const handleDeleteBatch = async (id: number, batchNumber: string) => {
-    if (!window.confirm(`Are you sure you want to delete batch "${batchNumber}" and all associated security codes from Neon database?`)) {
+    if (!window.confirm(`Are you sure you want to delete batch "${batchNumber}" and all associated security codes?`)) {
       return;
     }
     try {
@@ -389,7 +427,7 @@ export default function AdminDashboard() {
         });
         const data = await res.json();
         if (res.ok) {
-          setImportResult({ success: true, message: data.message || `Successfully imported ${productsToImport.length} products into Neon!` });
+          setImportResult({ success: true, message: data.message || `Successfully imported ${productsToImport.length} products!` });
           fetchProducts();
         } else {
           setImportResult({ success: false, message: data.error || 'Failed to import products.' });
@@ -434,7 +472,7 @@ export default function AdminDashboard() {
         });
         const data = await res.json();
         if (res.ok) {
-          setImportResult({ success: true, message: data.message || `Successfully processed ${batchesToImport.length} batches in Neon!` });
+          setImportResult({ success: true, message: data.message || `Successfully registered ${batchesToImport.length} batches!` });
           fetchBatches();
           fetchTelemetry();
         } else {
@@ -498,12 +536,12 @@ export default function AdminDashboard() {
         <div className="mb-8 p-3 rounded bg-veltrix-dark-2 border border-veltrix-dark-4 flex items-center gap-2 text-[10px] font-mono">
           <Database size={14} className="text-veltrix-gold-1 shrink-0" />
           <div className="flex-grow">
-            <div className="text-veltrix-light-4 font-bold">Neon PostgreSQL 18</div>
+            <div className="text-veltrix-light-4 font-bold">Security Core</div>
             <div className="flex items-center gap-1.5 text-[9px]">
               {dbStatus === 'connected' && (
                 <span className="flex items-center gap-1.5 text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Neon Online
+                  Active & Online
                 </span>
               )}
               {dbStatus === 'checking' && (
@@ -515,7 +553,7 @@ export default function AdminDashboard() {
               {dbStatus === 'error' && (
                 <span className="flex items-center gap-1.5 text-red-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
-                  Offline (Fallback)
+                  Offline Mode
                 </span>
               )}
             </div>
@@ -575,14 +613,14 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <p className="eyebrow gold-text mb-2">Control Panel • Neon Cloud</p>
+            <p className="eyebrow gold-text mb-2">Control Panel • Enterprise Security</p>
             <h1 className="font-display text-3xl md:text-5xl tracking-tighter text-veltrix-dark-3">
               {activeTab === 'telemetry' && 'Overview & Telemetry'}
               {activeTab === 'products' && 'Catalog Management'}
               {activeTab === 'batches' && 'Batches & Security Codes'}
             </h1>
             <p className="text-veltrix-text-dark font-display text-base mt-1">
-              {activeTab === 'telemetry' && 'Track real-time authenticity verifications logged in Neon PostgreSQL.'}
+              {activeTab === 'telemetry' && 'Track real-time authenticity verifications logged in the central security registry.'}
               {activeTab === 'products' && 'Manage formulations, concentrations, and pharmaceutical specifications.'}
               {activeTab === 'batches' && 'Generate new batches with thousands of unique 6-character anti-counterfeit security codes.'}
             </p>
@@ -668,7 +706,7 @@ export default function AdminDashboard() {
               <div className="px-8 py-6 border-b border-veltrix-border-2 bg-veltrix-light-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                   <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Recent Verification Queries</h3>
-                  <p className="text-xs text-veltrix-text-gray font-mono mt-1">Directly synchronized from Neon PostgreSQL via atomic RPC procedure</p>
+                  <p className="text-xs text-veltrix-text-gray font-mono mt-1">Directly synchronized with the security registry via atomic cryptographic procedures</p>
                 </div>
                 <div className="relative w-full md:w-64">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-veltrix-text-muted" />
@@ -698,7 +736,7 @@ export default function AdminDashboard() {
                     {logs.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="px-8 py-10 text-center text-veltrix-text-muted">
-                          No records found in Neon.
+                          No records found in the registry.
                         </td>
                       </tr>
                     ) : (
@@ -954,62 +992,107 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  {/* Photo Preset & Custom URL */}
+                  {/* Product Photo Upload & Presets */}
                   <div>
-                    <label className="block text-veltrix-text-muted uppercase mb-1">Product Presentation Image</label>
-                    <div className="grid grid-cols-3 gap-2 mb-2">
-                      <button
-                        type="button"
-                        onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-vials.png' })}
-                        className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
-                          newProduct.image_url === '/essence-vials.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Product Photo</label>
+                    
+                    {/* Primary Direct File Upload Box */}
+                    <div className="mb-3">
+                      <label 
+                        htmlFor="product-image-file" 
+                        className={`flex flex-col items-center justify-center p-4 border-2 border-dashed rounded cursor-pointer transition-all ${
+                          imageUploading 
+                            ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 animate-pulse' 
+                            : 'border-veltrix-border-2 hover:border-veltrix-gold-1 bg-white hover:bg-veltrix-light-2'
                         }`}
                       >
-                        <img src="/essence-vials.png" alt="Vials" className="h-10 object-contain mb-1" />
-                        <span className="text-[10px] font-bold text-veltrix-dark-3">Vials</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-pen-box.png' })}
-                        className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
-                          newProduct.image_url === '/essence-pen-box.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
-                        }`}
-                      >
-                        <img src="/essence-pen-box.png" alt="Pen & Box" className="h-10 object-contain mb-1" />
-                        <span className="text-[10px] font-bold text-veltrix-dark-3">Pen & Box</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-seals.jpg' })}
-                        className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
-                          newProduct.image_url === '/essence-seals.jpg' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
-                        }`}
-                      >
-                        <img src="/essence-seals.jpg" alt="Security Seals" className="h-10 object-contain mb-1" />
-                        <span className="text-[10px] font-bold text-veltrix-dark-3">Hologram Seal</span>
-                      </button>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-veltrix-gold-1/15 flex items-center justify-center text-veltrix-gold-5 shrink-0">
+                            <ImageIcon size={18} />
+                          </div>
+                          <div>
+                            <span className="block text-xs font-bold text-veltrix-dark-3">
+                              {imageUploading ? 'Uploading & Processing Image...' : 'Click to Upload Product Photo from Computer'}
+                            </span>
+                            <span className="text-[10px] text-veltrix-text-muted">
+                              Supports JPG, PNG, WEBP (saved directly to catalog)
+                            </span>
+                          </div>
+                        </div>
+                        <input 
+                          id="product-image-file"
+                          type="file" 
+                          accept="image/*"
+                          onChange={handleProductImageUpload}
+                          disabled={imageUploading}
+                          className="hidden" 
+                        />
+                      </label>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <input 
-                        type="text" 
-                        placeholder="Or custom path: /products/compound.png or image URL"
-                        value={newProduct.image_url}
-                        onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
-                        className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3 font-sans text-xs"
-                      />
-                      {newProduct.image_url && (
-                        <div className="w-10 h-10 border border-veltrix-border-2 bg-white flex items-center justify-center shrink-0 rounded overflow-hidden">
-                          <img 
-                            src={newProduct.image_url} 
-                            alt="Preview" 
-                            className="max-h-full max-w-full object-contain" 
-                            onError={(e) => { (e.target as HTMLImageElement).src = '/essence-vials.png'; }} 
-                          />
+                    {/* Preview & Current URL display */}
+                    {newProduct.image_url && (
+                      <div className="mb-3 p-2.5 bg-white border border-veltrix-border-2 rounded flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-12 h-12 border border-veltrix-border-2 bg-veltrix-light-2 rounded flex items-center justify-center shrink-0 overflow-hidden">
+                            <img 
+                              src={newProduct.image_url} 
+                              alt="Product Preview" 
+                              className="max-h-full max-w-full object-contain"
+                              onError={(e) => { (e.target as HTMLImageElement).src = '/essence-vials.png'; }}
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-bold text-emerald-700 block uppercase tracking-wider">Active Photo Selected</span>
+                            <span className="text-xs text-veltrix-dark-3 font-mono truncate block max-w-xs">{newProduct.image_url}</span>
+                          </div>
                         </div>
-                      )}
+                        <button
+                          type="button"
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '' })}
+                          className="text-[10px] font-bold text-red-600 hover:text-red-800 uppercase px-2 py-1 border border-red-200 hover:bg-red-50 rounded"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Quick Presets fallback */}
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-veltrix-text-muted mb-1.5 block">Or select standard packaging preset:</span>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-vials.png' })}
+                          className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
+                            newProduct.image_url === '/essence-vials.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                          }`}
+                        >
+                          <img src="/essence-vials.png" alt="Vials" className="h-8 object-contain mb-1" />
+                          <span className="text-[10px] font-bold text-veltrix-dark-3">Vials</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-pen-box.png' })}
+                          className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
+                            newProduct.image_url === '/essence-pen-box.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                          }`}
+                        >
+                          <img src="/essence-pen-box.png" alt="Pen & Box" className="h-8 object-contain mb-1" />
+                          <span className="text-[10px] font-bold text-veltrix-dark-3">Pen & Box</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-seals.jpg' })}
+                          className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
+                            newProduct.image_url === '/essence-seals.jpg' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                          }`}
+                        >
+                          <img src="/essence-seals.jpg" alt="Security Seals" className="h-8 object-contain mb-1" />
+                          <span className="text-[10px] font-bold text-veltrix-dark-3">Hologram Seal</span>
+                        </button>
+                      </div>
                     </div>
-                    <span className="text-[10px] text-veltrix-text-muted mt-1 block">Custom photos: drop files into <code>public/products/</code> and reference as <code>/products/filename.png</code>.</span>
                   </div>
 
                   <div>
@@ -1031,7 +1114,7 @@ export default function AdminDashboard() {
                       Cancel
                     </button>
                     <button type="submit" className="btn-gold">
-                      Save to Neon
+                      Save Product
                     </button>
                   </div>
                 </form>
@@ -1057,7 +1140,7 @@ export default function AdminDashboard() {
                   <X size={20} />
                 </button>
                 <h3 className="font-display text-2xl text-veltrix-dark-3 mb-2">Batch & Code Generator</h3>
-                <p className="text-xs text-veltrix-text-gray font-mono mb-6">Generates cryptographically secure 6-character alphanumeric codes in Neon PostgreSQL.</p>
+                <p className="text-xs text-veltrix-text-gray font-mono mb-6">Generates cryptographically secure 6-character alphanumeric codes in the central security registry.</p>
 
                 <form onSubmit={handleGenerateBatch} className="flex flex-col gap-4 text-xs font-mono">
                   <div>
@@ -1104,7 +1187,7 @@ export default function AdminDashboard() {
                       Cancel
                     </button>
                     <button type="submit" className="btn-gold flex items-center gap-2">
-                      <Layers size={14} /> Generate & Save to Neon
+                      <Layers size={14} /> Generate & Register Batch
                     </button>
                   </div>
                 </form>
@@ -1131,7 +1214,7 @@ export default function AdminDashboard() {
                 </button>
                 <h3 className="font-display text-2xl text-veltrix-dark-3 mb-1">Batch Codes - {selectedBatchNumber}</h3>
                 <p className="text-xs text-veltrix-text-gray font-mono mb-4">
-                  {selectedBatchCodes.length} codes loaded from Neon PostgreSQL. Click any code to copy.
+                  {selectedBatchCodes.length} security codes loaded from registry. Click any code to copy.
                 </p>
 
                 {/* Export Buttons for Physical Label Printing */}
@@ -1207,7 +1290,7 @@ export default function AdminDashboard() {
                 </button>
                 <h3 className="font-display text-2xl text-veltrix-dark-3 mb-1">Bulk Database Import</h3>
                 <p className="text-xs text-veltrix-text-gray font-mono mb-6">
-                  Ingest CSV spreadsheets directly into Neon PostgreSQL 18.
+                  Ingest CSV spreadsheets directly into the central database.
                 </p>
 
                 {/* Import Type Selector */}
@@ -1300,7 +1383,7 @@ export default function AdminDashboard() {
                       className="btn-gold flex items-center gap-2 disabled:opacity-50"
                     >
                       <Upload size={14} className={importLoading ? 'animate-spin' : ''} />
-                      {importLoading ? 'Importing to Neon...' : `Process & Ingest to Neon`}
+                      {importLoading ? 'Importing...' : `Process & Ingest Records`}
                     </button>
                   </div>
                 </form>

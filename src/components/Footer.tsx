@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import essenceEmblem from '../assets/essence-emblem.png';
 
 export default function Footer() {
   const { t } = useTranslation();
+  const wppNumber = (import.meta.env.VITE_WHATSAPP_NUMBER ?? '').replace(/\D/g, '');
 
   return (
     <footer className="bg-veltrix-dark-1 bg-gradient-to-b from-[#18191f]/60 to-veltrix-dark-1 text-veltrix-light-4 pt-16 pb-8 mt-auto border-t border-veltrix-dark-3/30">
@@ -23,6 +24,10 @@ export default function Footer() {
           </Link>
           <p className="mt-6 text-sm text-veltrix-text-muted max-w-sm leading-7">
             {t('footer.description')}
+          </p>
+          <p className="mt-4 text-[10px] text-veltrix-text-muted/60 leading-relaxed">
+            Essence Pharma Ltd. · Kuwait, 104 St.<br />
+            support@essencepharma.com
           </p>
         </div>
         
@@ -45,6 +50,18 @@ export default function Footer() {
             <a href="mailto:support@essencepharma.com" className="block py-1.5 text-sm text-veltrix-border-1 hover:text-veltrix-gold-2">
               support@essencepharma.com
             </a>
+            {wppNumber && (
+              <a
+                id="footer-whatsapp-link"
+                href={`https://wa.me/${wppNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 py-1.5 text-sm text-veltrix-border-1 hover:text-veltrix-gold-2 transition-colors"
+              >
+                <MessageCircle size={14} />
+                WhatsApp
+              </a>
+            )}
             <p className="text-sm text-veltrix-border-1 mt-2">
               {t('footer.hours')}
             </p>
@@ -54,7 +71,11 @@ export default function Footer() {
 
       <div className="container-v relative z-10 mt-14 pt-6 border-t border-veltrix-dark-4 flex flex-wrap gap-4 justify-between text-[9px] tracking-wider uppercase text-gray-500">
         <span>© {new Date().getFullYear()} Essence Pharma</span>
-        <span>{t('footer.copyright')}</span>
+        <div className="flex gap-4">
+          <a href="#" className="hover:text-veltrix-gold-1 transition-colors">Privacy Policy</a>
+          <a href="#" className="hover:text-veltrix-gold-1 transition-colors">Terms of Use</a>
+          <span>{t('footer.copyright')}</span>
+        </div>
       </div>
     </footer>
   );
