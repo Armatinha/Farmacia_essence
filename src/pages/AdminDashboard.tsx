@@ -493,17 +493,15 @@ export default function AdminDashboard() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  // Initial load
+  // Tab-based data load (only fetch what is needed when tab changes or on mount)
   useEffect(() => {
-    fetchTelemetry();
-    fetchProducts();
-    fetchBatches();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === 'telemetry') fetchTelemetry();
-    if (activeTab === 'products') fetchProducts();
-    if (activeTab === 'batches') fetchBatches();
+    if (activeTab === 'telemetry') {
+      fetchTelemetry();
+    } else if (activeTab === 'products') {
+      fetchProducts();
+    } else if (activeTab === 'batches') {
+      fetchBatches();
+    }
   }, [activeTab]);
 
   const formatDate = (dateStr: string) => {
@@ -520,8 +518,16 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <aside className="w-full md:w-72 bg-veltrix-dark-1 border-r border-veltrix-dark-4 p-8 flex flex-col z-20 shadow-2xl shadow-black/50">
         <div className="mb-10">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={essenceEmblem} alt="Essence Emblem" className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-dark-4" />
+          <Link to="/" aria-label="Essence Pharma home page" className="flex items-center gap-3">
+            <img 
+              src={essenceEmblem} 
+              alt="Essence Emblem" 
+              width={32} 
+              height={32}
+              fetchPriority="high"
+              loading="eager"
+              className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-dark-4" 
+            />
             <div>
               <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">ESSENCE</div>
               <div className="mt-1 flex items-center gap-2">
@@ -599,6 +605,7 @@ export default function AdminDashboard() {
         <div className="mt-auto pt-6 border-t border-veltrix-dark-4">
           <Link 
             to="/" 
+            aria-label="Exit dashboard and return to home page"
             className="flex items-center gap-4 px-5 py-4 text-veltrix-text-muted hover:text-red-400 w-full rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors"
           >
             <LogOut size={16} /> Exit Dashboard
@@ -636,6 +643,7 @@ export default function AdminDashboard() {
               disabled={loading}
               className="p-3 bg-veltrix-light-3 hover:bg-veltrix-light-2 border border-veltrix-border-2 text-veltrix-dark-3 rounded cursor-pointer transition-colors shadow-xs"
               title="Refresh data"
+              aria-label="Refresh data"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin text-veltrix-gold-1' : ''} />
             </button>
@@ -648,6 +656,7 @@ export default function AdminDashboard() {
               }}
               className="px-4 py-2.5 bg-veltrix-light-3 hover:bg-veltrix-light-2 border border-veltrix-border-2 text-veltrix-dark-3 rounded font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors shadow-xs"
               title="Import spreadsheet data"
+              aria-label="Import CSV data"
             >
               <Upload size={14} className="text-veltrix-gold-1" /> Import CSV
             </button>
@@ -656,6 +665,7 @@ export default function AdminDashboard() {
               <button 
                 onClick={() => setShowProductModal(true)}
                 className="btn-gold flex items-center gap-2 text-xs"
+                aria-label="Add new product"
               >
                 <Plus size={16} /> New Product
               </button>
@@ -665,6 +675,7 @@ export default function AdminDashboard() {
               <button 
                 onClick={() => setShowBatchModal(true)}
                 className="btn-gold flex items-center gap-2 text-xs"
+                aria-label="Generate new security batch"
               >
                 <Plus size={16} /> Generate New Batch
               </button>
@@ -674,12 +685,12 @@ export default function AdminDashboard() {
 
         {/* TAB 1: TELEMETRY */}
         {activeTab === 'telemetry' && (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <div className="space-y-12">
             {/* KPI Cards */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
               <div className="bg-veltrix-light-3 p-8 border border-veltrix-border-2 card-lift relative overflow-hidden shadow-xs">
                 <div className="absolute -right-4 -top-4 opacity-5 text-veltrix-dark-1"><Activity size={120} /></div>
-                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Total Verifications</p>
+                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-dark uppercase mb-4">Total Verifications</p>
                 <h2 className="font-display text-5xl tracking-tighter text-veltrix-dark-3">{metrics.total_verifications.toLocaleString()}</h2>
                 <p className="text-[#166534] text-xs font-mono font-bold mt-4 tracking-wider">{metrics.weekly_growth}</p>
               </div>
@@ -693,7 +704,7 @@ export default function AdminDashboard() {
               
               <div className="bg-veltrix-light-3 p-8 border border-veltrix-border-2 card-lift relative overflow-hidden shadow-xs">
                 <div className="absolute -right-4 -top-4 opacity-5 text-veltrix-dark-1"><Package size={120} /></div>
-                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-muted uppercase mb-4">Active Batches</p>
+                <p className="text-[10px] font-bold tracking-widest text-veltrix-text-dark uppercase mb-4">Active Batches</p>
                 <h2 className="font-display text-5xl tracking-tighter text-veltrix-dark-3">{metrics.active_batches}</h2>
                 <p className="text-veltrix-text-dark text-xs font-mono mt-4 tracking-wider">
                   {metrics.total_codes.toLocaleString()} REGISTERED CODES
@@ -706,17 +717,18 @@ export default function AdminDashboard() {
               <div className="px-8 py-6 border-b border-veltrix-border-2 bg-veltrix-light-2 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                   <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Recent Verification Queries</h3>
-                  <p className="text-xs text-veltrix-text-gray font-mono mt-1">Directly synchronized with the security registry via atomic cryptographic procedures</p>
+                  <p className="text-xs text-veltrix-text-dark font-mono mt-1">Directly synchronized with the security registry via atomic cryptographic procedures</p>
                 </div>
                 <div className="relative w-full md:w-64">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-veltrix-text-muted" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-veltrix-text-dark" />
                   <input 
                     type="text" 
                     placeholder="Filter by code..." 
+                    aria-label="Filter verification queries by security code"
                     value={logSearch}
                     onChange={(e) => setLogSearch(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && fetchTelemetry()}
-                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-veltrix-border-2 text-veltrix-dark-3 placeholder:text-veltrix-text-muted uppercase font-mono"
+                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-veltrix-border-2 text-veltrix-dark-3 placeholder:text-veltrix-text-dark/60 uppercase font-mono"
                   />
                 </div>
               </div>
@@ -724,7 +736,7 @@ export default function AdminDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
-                    <tr className="border-b border-veltrix-border-2 text-[9px] uppercase tracking-widest text-veltrix-text-gray bg-veltrix-light-4">
+                    <tr className="border-b border-veltrix-border-2 text-[9px] uppercase tracking-widest text-veltrix-text-dark bg-veltrix-light-4">
                       <th className="px-8 py-5 font-bold">Date / Time</th>
                       <th className="px-8 py-5 font-bold">Queried Code</th>
                       <th className="px-8 py-5 font-bold">Database Status</th>
@@ -779,7 +791,7 @@ export default function AdminDashboard() {
                 </table>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* TAB 2: PRODUCTS */}

@@ -29,10 +29,15 @@ const pageMeta: Record<string, { title: string; description: string; ogTitle?: s
     description:
       'Get in touch with the Essence Pharma technical and commercial team for product inquiries, authentication support, or partnership opportunities.',
   },
+  '/admin': {
+    title: 'Security Core & Telemetry | Essence Pharma',
+    description:
+      'Enterprise administration and batch verification telemetry console for Essence Pharma pharmaceutical registry.',
+  },
 };
 
-const OG_IMAGE = 'https://essencepharma.com/og-image.jpg';
-const SITE_URL = 'https://essencepharma.com';
+const OG_IMAGE = 'https://essencepharmalab.com/og-image.webp';
+const SITE_URL = 'https://essencepharmalab.com';
 
 export function useSEO() {
   const { pathname } = useLocation();
