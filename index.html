@@ -43,6 +43,14 @@
     <!-- ─── Sitemap hint ─── -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
+    <!-- ─── Hero Image Preload for Instant LCP ─── -->
+    <link rel="preload" as="image" href="/essence-pen-box.webp" type="image/webp" fetchpriority="high" />
+
+    <!-- ─── Critical CSS for Fast First Paint (FCP) ─── -->
+    <style>
+      body { background-color: #f8f5ee; color: #171820; margin: 0; }
+    </style>
+
     <!-- ─── Google Fonts — preload critical weights ─── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

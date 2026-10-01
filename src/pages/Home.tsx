@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, Microscope, FileCheck, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import heroImage from '../assets/essence-pen-box.webp';
+
+const heroImage = '/essence-pen-box.webp';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -107,7 +108,7 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <p className="eyebrow text-veltrix-dark-3">{t('home.authEyebrow')}</p>
             <h2 className="font-display text-5xl md:text-7xl tracking-tighter mt-4 leading-none text-veltrix-dark-3">{t('home.authTitle')}</h2>
-            <p className="max-w-2xl mt-6 text-veltrix-text-darker">
+            <p className="max-w-2xl mt-6 text-veltrix-dark-3">
               {t('home.authText')}
             </p>
           </motion.div>

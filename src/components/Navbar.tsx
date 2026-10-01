@@ -45,8 +45,8 @@ export default function Navbar() {
             <Link
               key={link.name}
               to={link.path}
-              className={`text-[12px] font-semibold tracking-wide transition-colors hover:text-veltrix-gold-2 ${
-                isActive(link.path) ? 'text-veltrix-gold-2' : 'text-veltrix-dark-3'
+              className={`text-[12px] font-semibold tracking-wide transition-colors hover:text-veltrix-gold-text ${
+                isActive(link.path) ? 'text-veltrix-gold-text font-bold' : 'text-veltrix-dark-3'
               }`}
             >
               {link.name}
@@ -98,7 +98,7 @@ export default function Navbar() {
                 to={link.path}
                 onClick={() => setIsOpen(false)}
                 className={`text-[12px] font-semibold tracking-wide py-2 border-b border-veltrix-border-3 ${
-                  isActive(link.path) ? 'text-veltrix-gold-2' : 'text-veltrix-dark-3'
+                  isActive(link.path) ? 'text-veltrix-gold-text font-bold' : 'text-veltrix-dark-3'
                 }`}
               >
                 {link.name}
