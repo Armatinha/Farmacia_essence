@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ShieldCheck, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import essenceEmblem from '../assets/essence-emblem.webp';
+import essenceEmblem from '../assets/essence-emblem-sm.webp';
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="container-v grid md:grid-cols-[1.5fr_1fr_1fr] gap-12 relative z-10">
         <div>
           <Link to="/" className="flex items-center gap-3">
-            <img src={essenceEmblem} alt="Essence Emblem" className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-dark-4" />
+            <img src={essenceEmblem} alt="Essence Emblem" width={32} height={32} className="w-8 h-8 rounded-md object-cover shadow-xs border border-veltrix-dark-4" />
             <div>
               <div className="text-[17px] font-semibold tracking-[.18em] leading-none text-veltrix-light-5">ESSENCE</div>
               <div className="mt-1 flex items-center gap-2">

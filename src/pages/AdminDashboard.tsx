@@ -25,7 +25,7 @@ import {
   FileText,
   Image as ImageIcon
 } from 'lucide-react';
-import essenceEmblem from '../assets/essence-emblem.webp';
+import essenceEmblem from '../assets/essence-emblem-sm.webp';
 
 type TabType = 'telemetry' | 'products' | 'batches';
 
@@ -803,11 +803,11 @@ export default function AdminDashboard() {
                     {/* Product Presentation Image */}
                     <div className="w-full h-44 bg-gradient-to-b from-white to-veltrix-light-2 border border-veltrix-border-1 mb-4 flex items-center justify-center p-3 overflow-hidden rounded-xs relative group">
                       <img 
-                        src={p.image_url || '/essence-vials.png'} 
+                        src={p.image_url || '/essence-vials.webp'} 
                         alt={p.name} 
                         className="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/essence-vials.png';
+                          (e.target as HTMLImageElement).src = '/essence-vials.webp';
                         }}
                       />
                       <span className="absolute bottom-2 right-2 text-[9px] font-mono px-2 py-0.5 bg-black/50 text-white rounded backdrop-blur-xs">
@@ -1044,7 +1044,7 @@ export default function AdminDashboard() {
                               src={newProduct.image_url} 
                               alt="Product Preview" 
                               className="max-h-full max-w-full object-contain"
-                              onError={(e) => { (e.target as HTMLImageElement).src = '/essence-vials.png'; }}
+                              onError={(e) => { (e.target as HTMLImageElement).src = '/essence-vials.webp'; }}
                             />
                           </div>
                           <div className="min-w-0">
@@ -1068,32 +1068,32 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-3 gap-2">
                         <button
                           type="button"
-                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-vials.png' })}
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-vials.webp' })}
                           className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
-                            newProduct.image_url === '/essence-vials.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                            newProduct.image_url === '/essence-vials.webp' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
                           }`}
                         >
-                          <img src="/essence-vials.png" alt="Vials" className="h-8 object-contain mb-1" />
+                          <img src="/essence-vials.webp" alt="Vials" className="h-8 object-contain mb-1" />
                           <span className="text-[10px] font-bold text-veltrix-dark-3">Vials</span>
                         </button>
                         <button
                           type="button"
-                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-pen-box.png' })}
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-pen-box.webp' })}
                           className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
-                            newProduct.image_url === '/essence-pen-box.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                            newProduct.image_url === '/essence-pen-box.webp' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
                           }`}
                         >
-                          <img src="/essence-pen-box.png" alt="Pen & Box" className="h-8 object-contain mb-1" />
+                          <img src="/essence-pen-box.webp" alt="Pen & Box" className="h-8 object-contain mb-1" />
                           <span className="text-[10px] font-bold text-veltrix-dark-3">Pen & Box</span>
                         </button>
                         <button
                           type="button"
-                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-seals.jpg' })}
+                          onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-seals.webp' })}
                           className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
-                            newProduct.image_url === '/essence-seals.jpg' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                            newProduct.image_url === '/essence-seals.webp' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10 shadow-xs' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
                           }`}
                         >
-                          <img src="/essence-seals.jpg" alt="Security Seals" className="h-8 object-contain mb-1" />
+                          <img src="/essence-seals.webp" alt="Security Seals" className="h-8 object-contain mb-1" />
                           <span className="text-[10px] font-bold text-veltrix-dark-3">Hologram Seal</span>
                         </button>
                       </div>
