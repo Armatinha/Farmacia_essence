@@ -1,11 +1,14 @@
 import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 import { query } from '../db.js';
+
+const WEBP_QUALITY = 88; // high quality with excellent compression
 
 export const productsRouter = Router();
 
-// POST /api/products/upload-image - Upload product presentation photo
+// POST /api/products/upload-image — Upload & auto-convert product image to WebP
 productsRouter.post('/upload-image', async (req: Request, res: Response) => {
   try {
     const { filename, dataUrl } = req.body;
@@ -18,27 +21,42 @@ productsRouter.post('/upload-image', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid data URL format.' });
     }
 
-    const ext = path.extname(filename) || '.png';
-    const cleanBase = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
-    const safeFilename = `${Date.now()}-${cleanBase}${ext}`;
-    const buffer = Buffer.from(matches[2], 'base64');
+    const inputBuffer = Buffer.from(matches[2], 'base64');
+
+    // Build safe filename — always output as .webp regardless of source format
+    const originalExt = path.extname(filename) || '.png';
+    const cleanBase = path.basename(filename, originalExt).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const safeFilename = `${Date.now()}-${cleanBase}.webp`;
+
+    // Convert to WebP via sharp (quality 88 = high quality + excellent compression)
+    const webpBuffer = await sharp(inputBuffer)
+      .webp({ quality: WEBP_QUALITY, effort: 5 })
+      .toBuffer();
 
     const publicDir = path.resolve(process.cwd(), 'public', 'products');
     await fs.promises.mkdir(publicDir, { recursive: true });
-    await fs.promises.writeFile(path.join(publicDir, safeFilename), buffer);
+    await fs.promises.writeFile(path.join(publicDir, safeFilename), webpBuffer);
 
+    // Also write to dist/products if a production build is present
     const distDir = path.resolve(process.cwd(), 'dist', 'products');
     if (fs.existsSync(path.resolve(process.cwd(), 'dist'))) {
       await fs.promises.mkdir(distDir, { recursive: true });
-      await fs.promises.writeFile(path.join(distDir, safeFilename), buffer);
+      await fs.promises.writeFile(path.join(distDir, safeFilename), webpBuffer);
     }
+
+    const originalKB = Math.round(inputBuffer.length / 1024);
+    const webpKB = Math.round(webpBuffer.length / 1024);
+    console.log(`[upload-image] ${filename} → ${safeFilename} (${originalKB}KB → ${webpKB}KB WebP)`);
 
     return res.json({
       url: `/products/${safeFilename}`,
-      message: 'Product image uploaded successfully.'
+      format: 'webp',
+      originalSize: inputBuffer.length,
+      webpSize: webpBuffer.length,
+      message: 'Product image uploaded and converted to WebP successfully.'
     });
   } catch (error: any) {
-    console.error('Error saving uploaded product image:', error);
+    console.error('Error processing product image:', error);
     return res.status(500).json({ error: 'Failed to save product image.' });
   }
 });

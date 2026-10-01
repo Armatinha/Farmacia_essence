@@ -8,6 +8,7 @@
     "server": "tsx server/src/index.ts",
     "server:dev": "tsx watch server/src/index.ts",
     "db:seed": "tsx server/src/seed.ts",
+    "convert:webp": "tsx scripts/convert-to-webp.ts",
     "dev:all": "concurrently -n \"frontend,backend\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server:dev\"",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
@@ -25,7 +26,8 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-i18next": "^17.0.15",
-    "react-router-dom": "^7.18.4"
+    "react-router-dom": "^7.18.4",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -35,6 +37,7 @@
     "@types/pg": "^8.23.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
+    "@types/sharp": "^0.31.1",
     "@vitejs/plugin-react": "^6.1.1",
     "concurrently": "^10.0.5",
     "oxlint": "^1.81.0",

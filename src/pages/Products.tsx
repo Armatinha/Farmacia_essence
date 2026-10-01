@@ -3,9 +3,9 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import vialsImage from '../assets/essence-vials.png';
-import penBoxImage from '../assets/essence-pen-box.png';
-import sealsImage from '../assets/essence-seals.jpg';
+import vialsImage from '../assets/essence-vials.webp';
+import penBoxImage from '../assets/essence-pen-box.webp';
+import sealsImage from '../assets/essence-seals.webp';
 
 interface ProductItem {
   id: number;

@@ -26,7 +26,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import essenceEmblem from '../assets/essence-emblem.png';
+import essenceEmblem from '../assets/essence-emblem.webp';
 
 type TabType = 'telemetry' | 'products' | 'batches';
 
