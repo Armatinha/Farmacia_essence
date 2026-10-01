@@ -81,6 +81,58 @@ productsRouter.post('/', async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/products/bulk - Bulk import products (Admin)
+productsRouter.post('/bulk', async (req: Request, res: Response) => {
+  try {
+    const { products } = req.body;
+    if (!Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ error: 'Array of products is required.' });
+    }
+
+    const inserted: any[] = [];
+    for (const p of products) {
+      if (!p.name) continue;
+      const cleanSlug = (p.slug || p.name.toLowerCase().trim()).replace(/[^a-z0-9-]/g, '-');
+      const resQuery = await query(
+        `INSERT INTO products (name, slug, concentration, formula, category, purity, description, presentations, image_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         ON CONFLICT (slug) DO UPDATE SET
+           name = EXCLUDED.name,
+           concentration = COALESCE(EXCLUDED.concentration, products.concentration),
+           formula = COALESCE(EXCLUDED.formula, products.formula),
+           category = COALESCE(EXCLUDED.category, products.category),
+           purity = COALESCE(EXCLUDED.purity, products.purity),
+           description = COALESCE(EXCLUDED.description, products.description),
+           presentations = COALESCE(EXCLUDED.presentations, products.presentations),
+           image_url = COALESCE(EXCLUDED.image_url, products.image_url)
+         RETURNING *;`,
+        [
+          p.name,
+          cleanSlug,
+          p.concentration || '',
+          p.formula || '',
+          p.category || 'Peptides',
+          p.purity || '≥ 99.0% HPLC',
+          p.description || '',
+          p.presentations || '',
+          p.image_url || '/essence-vials.png'
+        ]
+      );
+      if (resQuery.rows.length > 0) {
+        inserted.push(resQuery.rows[0]);
+      }
+    }
+
+    return res.status(201).json({
+      message: `Successfully processed ${inserted.length} products into Neon database.`,
+      products: inserted
+    });
+  } catch (error: any) {
+    console.error('Error importing products in bulk:', error);
+    return res.status(500).json({ error: 'Failed to bulk import products into Neon database.' });
+  }
+});
+
 // PUT /api/products/:id - Update product (Admin)
 productsRouter.put('/:id', async (req: Request, res: Response) => {
   try {

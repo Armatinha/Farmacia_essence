@@ -17,7 +17,12 @@ import {
   Check,
   X,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Upload,
+  Download,
+  Trash2,
+  FileSpreadsheet,
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import essenceEmblem from '../assets/essence-emblem.png';
@@ -53,6 +58,8 @@ interface ProductItem {
   category?: string;
   purity?: string;
   description?: string;
+  presentations?: string;
+  image_url?: string;
   is_active: boolean;
 }
 
@@ -97,7 +104,9 @@ export default function AdminDashboard() {
     formula: '',
     category: 'Peptides',
     purity: '≥ 99.0% HPLC',
-    description: ''
+    description: '',
+    presentations: 'Lyophilized powder · Dosing pen',
+    image_url: '/essence-vials.png'
   });
 
   // Batches state
@@ -114,6 +123,13 @@ export default function AdminDashboard() {
     quantity: 25,
     notes: ''
   });
+
+  // Bulk Import state
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importType, setImportType] = useState<'products' | 'batches'>('products');
+  const [csvContent, setCsvContent] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
+  const [importResult, setImportResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Fetch telemetry metrics & logs
   const fetchTelemetry = async () => {
@@ -207,12 +223,31 @@ export default function AdminDashboard() {
           formula: '',
           category: 'Peptides',
           purity: '≥ 99.0% HPLC',
-          description: ''
+          description: '',
+          presentations: 'Lyophilized powder · Dosing pen',
+          image_url: '/essence-vials.png'
         });
         fetchProducts();
       }
     } catch (err) {
       console.error('Error creating product:', err);
+    }
+  };
+
+  // Delete product
+  const handleDeleteProduct = async (id: number, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete compound "${name}" from Neon database?`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchProducts();
+      } else {
+        alert('Failed to delete product.');
+      }
+    } catch (err) {
+      console.error('Error deleting product:', err);
     }
   };
 
@@ -239,6 +274,178 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       console.error('Error generating batch:', err);
+    }
+  };
+
+  // Delete batch
+  const handleDeleteBatch = async (id: number, batchNumber: string) => {
+    if (!window.confirm(`Are you sure you want to delete batch "${batchNumber}" and all associated security codes from Neon database?`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/batches/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchBatches();
+        fetchTelemetry();
+      } else {
+        alert('Failed to delete batch.');
+      }
+    } catch (err) {
+      console.error('Error deleting batch:', err);
+    }
+  };
+
+  // Export codes to CSV
+  const handleExportCSV = () => {
+    if (!selectedBatchCodes || selectedBatchCodes.length === 0) return;
+    const header = 'Code,Batch,Status,TimesChecked,FirstCheckedAt\n';
+    const rows = selectedBatchCodes
+      .map(c => `"${c.code}","${selectedBatchNumber}","${c.status || 'ACTIVE'}","${c.times_checked || 0}","${c.first_checked_at || ''}"`)
+      .join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Essence_Batch_${selectedBatchNumber}_Codes.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export codes to TXT
+  const handleExportTXT = () => {
+    if (!selectedBatchCodes || selectedBatchCodes.length === 0) return;
+    const rows = selectedBatchCodes.map(c => c.code).join('\n');
+    const blob = new Blob([rows], { type: 'text/plain;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Essence_Batch_${selectedBatchNumber}_Codes.txt`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Handle CSV file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) {
+        setCsvContent(text);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Handle Bulk Import submit
+  const handleImportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!csvContent.trim()) return;
+
+    setImportLoading(true);
+    setImportResult(null);
+
+    try {
+      const lines = csvContent.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
+      if (lines.length < 2) {
+        setImportResult({ success: false, message: 'CSV must contain a header and at least one data row.' });
+        setImportLoading(false);
+        return;
+      }
+
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
+
+      if (importType === 'products') {
+        const productsToImport = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+          if (cols.length === 0 || !cols[0]) continue;
+          
+          const rowObj: any = {};
+          headers.forEach((h, idx) => {
+            rowObj[h] = cols[idx] || '';
+          });
+
+          productsToImport.push({
+            name: rowObj.name || cols[0],
+            slug: rowObj.slug || (rowObj.name || cols[0]).toLowerCase().replace(/[^a-z0-9]/g, '-'),
+            concentration: rowObj.concentration || cols[2] || '',
+            formula: rowObj.formula || cols[3] || '',
+            category: rowObj.category || cols[4] || 'Peptides',
+            purity: rowObj.purity || cols[5] || '≥ 99.0% HPLC',
+            description: rowObj.description || cols[6] || '',
+            presentations: rowObj.presentations || cols[7] || '',
+            image_url: rowObj.image_url || cols[8] || '/essence-vials.png'
+          });
+        }
+
+        const res = await fetch('/api/products/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products: productsToImport })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setImportResult({ success: true, message: data.message || `Successfully imported ${productsToImport.length} products into Neon!` });
+          fetchProducts();
+        } else {
+          setImportResult({ success: false, message: data.error || 'Failed to import products.' });
+        }
+      } else {
+        // Batches import
+        const batchesMap = new Map<string, any>();
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+          if (cols.length === 0 || !cols[0]) continue;
+
+          const rowObj: any = {};
+          headers.forEach((h, idx) => {
+            rowObj[h] = cols[idx] || '';
+          });
+
+          const batchNumber = (rowObj.batch_number || cols[0]).toUpperCase();
+          if (!batchNumber) continue;
+
+          if (!batchesMap.has(batchNumber)) {
+            batchesMap.set(batchNumber, {
+              batch_number: batchNumber,
+              product_slug: rowObj.product_slug || cols[1] || '',
+              quantity: parseInt(rowObj.quantity || cols[2] || '25', 10),
+              manufacturing_date: rowObj.manufacturing_date || cols[3] || null,
+              expiry_date: rowObj.expiry_date || cols[4] || null,
+              notes: rowObj.notes || cols[5] || '',
+              codes: []
+            });
+          }
+
+          if (rowObj.code && rowObj.code.length === 6) {
+            batchesMap.get(batchNumber).codes.push(rowObj.code.toUpperCase());
+          }
+        }
+
+        const batchesToImport = Array.from(batchesMap.values());
+        const res = await fetch('/api/batches/bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ batches: batchesToImport })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setImportResult({ success: true, message: data.message || `Successfully processed ${batchesToImport.length} batches in Neon!` });
+          fetchBatches();
+          fetchTelemetry();
+        } else {
+          setImportResult({ success: false, message: data.error || 'Failed to import batches.' });
+        }
+      }
+    } catch (err: any) {
+      console.error('Import error:', err);
+      setImportResult({ success: false, message: `Error processing CSV: ${err.message}` });
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -395,6 +602,18 @@ export default function AdminDashboard() {
               <RefreshCw size={16} className={loading ? 'animate-spin text-veltrix-gold-1' : ''} />
             </button>
 
+            <button 
+              onClick={() => {
+                setImportType(activeTab === 'batches' ? 'batches' : 'products');
+                setShowImportModal(true);
+                setImportResult(null);
+              }}
+              className="px-4 py-2.5 bg-veltrix-light-3 hover:bg-veltrix-light-2 border border-veltrix-border-2 text-veltrix-dark-3 rounded font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors shadow-xs"
+              title="Import spreadsheet data"
+            >
+              <Upload size={14} className="text-veltrix-gold-1" /> Import CSV
+            </button>
+
             {activeTab === 'products' && (
               <button 
                 onClick={() => setShowProductModal(true)}
@@ -532,7 +751,22 @@ export default function AdminDashboard() {
               {products.map((p) => (
                 <div key={p.id} className="bg-veltrix-light-3 border border-veltrix-border-2 p-6 flex flex-col justify-between shadow-xs card-lift">
                   <div>
-                    <div className="flex justify-between items-start mb-3">
+                    {/* Product Presentation Image */}
+                    <div className="w-full h-44 bg-gradient-to-b from-white to-veltrix-light-2 border border-veltrix-border-1 mb-4 flex items-center justify-center p-3 overflow-hidden rounded-xs relative group">
+                      <img 
+                        src={p.image_url || '/essence-vials.png'} 
+                        alt={p.name} 
+                        className="max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/essence-vials.png';
+                        }}
+                      />
+                      <span className="absolute bottom-2 right-2 text-[9px] font-mono px-2 py-0.5 bg-black/50 text-white rounded backdrop-blur-xs">
+                        {p.presentations || 'Lyophilized'}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-start mb-2">
                       <span className="px-2 py-0.5 bg-veltrix-gold-1 text-veltrix-dark-3 font-mono text-[9px] font-bold uppercase">
                         {p.category || 'Peptides'}
                       </span>
@@ -541,14 +775,23 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                     <h3 className="font-display text-2xl text-veltrix-dark-3 font-bold mb-1">{p.name}</h3>
-                    <p className="font-mono text-xs text-veltrix-gold-5 mb-3">{p.formula || '-'}</p>
+                    <p className="font-mono text-xs text-veltrix-gold-5 mb-2">{p.formula || '-'}</p>
                     <p className="text-xs text-veltrix-text-dark line-clamp-3 leading-relaxed mb-4">
                       {p.description || 'No description registered.'}
                     </p>
                   </div>
                   <div className="pt-4 border-t border-veltrix-border-2 flex justify-between items-center text-xs font-mono">
-                    <span className="text-veltrix-text-muted">Concentration:</span>
-                    <strong className="text-veltrix-dark-3">{p.concentration || '-'}</strong>
+                    <div>
+                      <span className="text-veltrix-text-muted">Concentration: </span>
+                      <strong className="text-veltrix-dark-3">{p.concentration || '-'}</strong>
+                    </div>
+                    <button 
+                      onClick={() => handleDeleteProduct(p.id, p.name)}
+                      className="p-1.5 text-veltrix-text-muted hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                      title="Delete compound"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -602,12 +845,21 @@ export default function AdminDashboard() {
                           {b.expiry_date ? new Date(b.expiry_date).toLocaleDateString('en-US') : '-'}
                         </td>
                         <td className="px-8 py-5">
-                          <button 
-                            onClick={() => handleViewCodes(b.id, b.batch_number)}
-                            className="text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 bg-veltrix-dark-2 text-veltrix-light-5 hover:text-veltrix-gold-1 rounded cursor-pointer transition-colors"
-                          >
-                            View Codes
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => handleViewCodes(b.id, b.batch_number)}
+                              className="text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 bg-veltrix-dark-2 text-veltrix-light-5 hover:text-veltrix-gold-1 rounded cursor-pointer transition-colors"
+                            >
+                              View Codes
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteBatch(b.id, b.batch_number)}
+                              className="p-1.5 text-veltrix-text-muted hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Delete batch"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -626,7 +878,7 @@ export default function AdminDashboard() {
                 initial={{ opacity: 0, scale: 0.95 }} 
                 animate={{ opacity: 1, scale: 1 }} 
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-lg w-full shadow-2xl relative"
+                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-lg w-full shadow-2xl relative max-h-[90vh] overflow-y-auto"
               >
                 <button 
                   onClick={() => setShowProductModal(false)}
@@ -691,6 +943,75 @@ export default function AdminDashboard() {
                       />
                     </div>
                   </div>
+                  <div>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Presentation Format</label>
+                    <input 
+                      type="text" 
+                      placeholder="Ex: Lyophilized powder · Dosing pen"
+                      value={newProduct.presentations}
+                      onChange={(e) => setNewProduct({ ...newProduct, presentations: e.target.value })}
+                      className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3"
+                    />
+                  </div>
+
+                  {/* Photo Preset & Custom URL */}
+                  <div>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Product Presentation Image</label>
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-vials.png' })}
+                        className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
+                          newProduct.image_url === '/essence-vials.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                        }`}
+                      >
+                        <img src="/essence-vials.png" alt="Vials" className="h-10 object-contain mb-1" />
+                        <span className="text-[10px] font-bold text-veltrix-dark-3">Vials</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-pen-box.png' })}
+                        className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
+                          newProduct.image_url === '/essence-pen-box.png' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                        }`}
+                      >
+                        <img src="/essence-pen-box.png" alt="Pen & Box" className="h-10 object-contain mb-1" />
+                        <span className="text-[10px] font-bold text-veltrix-dark-3">Pen & Box</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct({ ...newProduct, image_url: '/essence-seals.jpg' })}
+                        className={`p-2 border text-center rounded cursor-pointer transition-all flex flex-col items-center ${
+                          newProduct.image_url === '/essence-seals.jpg' ? 'border-veltrix-gold-1 bg-veltrix-gold-1/10' : 'border-veltrix-border-2 bg-white hover:bg-veltrix-light-2'
+                        }`}
+                      >
+                        <img src="/essence-seals.jpg" alt="Security Seals" className="h-10 object-contain mb-1" />
+                        <span className="text-[10px] font-bold text-veltrix-dark-3">Hologram Seal</span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Or custom path: /products/compound.png or image URL"
+                        value={newProduct.image_url}
+                        onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
+                        className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3 font-sans text-xs"
+                      />
+                      {newProduct.image_url && (
+                        <div className="w-10 h-10 border border-veltrix-border-2 bg-white flex items-center justify-center shrink-0 rounded overflow-hidden">
+                          <img 
+                            src={newProduct.image_url} 
+                            alt="Preview" 
+                            className="max-h-full max-w-full object-contain" 
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/essence-vials.png'; }} 
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-veltrix-text-muted mt-1 block">Custom photos: drop files into <code>public/products/</code> and reference as <code>/products/filename.png</code>.</span>
+                  </div>
+
                   <div>
                     <label className="block text-veltrix-text-muted uppercase mb-1">Description</label>
                     <textarea 
@@ -809,9 +1130,27 @@ export default function AdminDashboard() {
                   <X size={20} />
                 </button>
                 <h3 className="font-display text-2xl text-veltrix-dark-3 mb-1">Batch Codes - {selectedBatchNumber}</h3>
-                <p className="text-xs text-veltrix-text-gray font-mono mb-6">
+                <p className="text-xs text-veltrix-text-gray font-mono mb-4">
                   {selectedBatchCodes.length} codes loaded from Neon PostgreSQL. Click any code to copy.
                 </p>
+
+                {/* Export Buttons for Physical Label Printing */}
+                <div className="flex flex-wrap items-center gap-2 mb-6">
+                  <button 
+                    onClick={handleExportCSV}
+                    className="px-3.5 py-2 bg-veltrix-light-2 hover:bg-white border border-veltrix-border-2 text-veltrix-dark-3 text-xs font-mono font-bold flex items-center gap-2 rounded cursor-pointer transition-colors shadow-xs"
+                    title="Export codes as CSV spreadsheet"
+                  >
+                    <Download size={14} className="text-veltrix-gold-1" /> Export CSV (Printing)
+                  </button>
+                  <button 
+                    onClick={handleExportTXT}
+                    className="px-3.5 py-2 bg-veltrix-light-2 hover:bg-white border border-veltrix-border-2 text-veltrix-dark-3 text-xs font-mono font-bold flex items-center gap-2 rounded cursor-pointer transition-colors shadow-xs"
+                    title="Export codes as plain text list"
+                  >
+                    <FileText size={14} className="text-veltrix-gold-1" /> Export TXT (Plain Codes)
+                  </button>
+                </div>
 
                 <div className="flex-grow overflow-y-auto pr-2 grid grid-cols-2 md:grid-cols-3 gap-2.5 font-mono text-xs">
                   {selectedBatchCodes.map((c) => (
@@ -845,6 +1184,126 @@ export default function AdminDashboard() {
                     Test Validator <ArrowUpRight size={14} />
                   </Link>
                 </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* MODAL: SPREADSHEET / CSV BULK IMPORT */}
+        <AnimatePresence>
+          {showImportModal && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-veltrix-light-3 border border-veltrix-border-2 p-8 max-w-xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto"
+              >
+                <button 
+                  onClick={() => setShowImportModal(false)}
+                  className="absolute right-5 top-5 text-veltrix-text-muted hover:text-veltrix-dark-3"
+                >
+                  <X size={20} />
+                </button>
+                <h3 className="font-display text-2xl text-veltrix-dark-3 mb-1">Bulk Database Import</h3>
+                <p className="text-xs text-veltrix-text-gray font-mono mb-6">
+                  Ingest CSV spreadsheets directly into Neon PostgreSQL 18.
+                </p>
+
+                {/* Import Type Selector */}
+                <div className="grid grid-cols-2 gap-3 mb-6 font-mono text-xs">
+                  <button
+                    type="button"
+                    onClick={() => { setImportType('products'); setImportResult(null); }}
+                    className={`p-3 border text-center font-bold uppercase tracking-wider rounded cursor-pointer transition-all ${
+                      importType === 'products'
+                        ? 'bg-veltrix-dark-2 text-veltrix-gold-1 border-veltrix-dark-4 shadow-xs'
+                        : 'bg-white text-veltrix-dark-3 border-veltrix-border-2 hover:bg-veltrix-light-2'
+                    }`}
+                  >
+                    Products Catalog
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setImportType('batches'); setImportResult(null); }}
+                    className={`p-3 border text-center font-bold uppercase tracking-wider rounded cursor-pointer transition-all ${
+                      importType === 'batches'
+                        ? 'bg-veltrix-dark-2 text-veltrix-gold-1 border-veltrix-dark-4 shadow-xs'
+                        : 'bg-white text-veltrix-dark-3 border-veltrix-border-2 hover:bg-veltrix-light-2'
+                    }`}
+                  >
+                    Batches & Codes
+                  </button>
+                </div>
+
+                {/* Sample Template Links */}
+                <div className="p-3 bg-veltrix-light-2 border border-veltrix-border-2 rounded mb-5 flex items-center justify-between font-mono text-xs">
+                  <div className="flex items-center gap-2 text-veltrix-text-dark">
+                    <FileSpreadsheet size={16} className="text-veltrix-gold-1 shrink-0" />
+                    <span>Download standard layout template:</span>
+                  </div>
+                  <a
+                    href={importType === 'products' ? '/templates/products_template.csv' : '/templates/batches_template.csv'}
+                    download
+                    className="font-bold text-veltrix-gold-5 hover:underline flex items-center gap-1 shrink-0 ml-2"
+                  >
+                    <Download size={13} /> Download Template
+                  </a>
+                </div>
+
+                {importResult && (
+                  <div className={`p-4 rounded mb-5 text-xs font-mono border ${
+                    importResult.success ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'
+                  }`}>
+                    <p className="font-bold mb-1">{importResult.success ? 'Import Complete' : 'Import Failed'}</p>
+                    <p>{importResult.message}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleImportSubmit} className="flex flex-col gap-4 text-xs font-mono">
+                  <div>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Upload CSV File</label>
+                    <input 
+                      type="file" 
+                      accept=".csv,.txt"
+                      onChange={handleFileUpload}
+                      className="w-full p-2 bg-white border border-veltrix-border-2 text-veltrix-dark-3 file:mr-4 file:py-1.5 file:px-3 file:border-0 file:text-xs file:font-mono file:bg-veltrix-dark-2 file:text-veltrix-light-5 file:cursor-pointer hover:file:bg-veltrix-dark-3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-veltrix-text-muted uppercase mb-1">Or Paste CSV Data Below</label>
+                    <textarea 
+                      rows={6}
+                      placeholder={
+                        importType === 'products' 
+                          ? 'name,slug,concentration,formula,category,purity,description,presentations,image_url\nRETATRUTIDE,retatrutide,40 mg,ESS-R40,Peptides,≥ 99.4% HPLC,Triple receptor agonist,Lyophilized,/essence-vials.png'
+                          : 'batch_number,product_slug,quantity,manufacturing_date,expiry_date,notes,code\nLOT-RET-2026A,retatrutide,50,2026-03-01,2028-03-01,Clinical trial batch,2H7MBT'
+                      }
+                      value={csvContent}
+                      onChange={(e) => setCsvContent(e.target.value)}
+                      className="w-full p-2.5 bg-white border border-veltrix-border-2 text-veltrix-dark-3 font-mono text-[11px] leading-relaxed"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-3 mt-4">
+                    <button 
+                      type="button" 
+                      onClick={() => setShowImportModal(false)}
+                      className="px-4 py-2 border border-veltrix-border-2 text-veltrix-text-muted hover:bg-veltrix-light-2"
+                    >
+                      Close
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={importLoading || !csvContent.trim()}
+                      className="btn-gold flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <Upload size={14} className={importLoading ? 'animate-spin' : ''} />
+                      {importLoading ? 'Importing to Neon...' : `Process & Ingest to Neon`}
+                    </button>
+                  </div>
+                </form>
               </motion.div>
             </div>
           )}

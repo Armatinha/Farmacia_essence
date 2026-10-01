@@ -210,3 +210,141 @@ batchesRouter.patch('/:id/toggle', async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Failed to update batch status.' });
   }
 });
+
+// POST /api/batches/bulk - Bulk create batches and generate or import security codes
+batchesRouter.post('/bulk', async (req: Request, res: Response) => {
+  const client = await pool.connect();
+  try {
+    const { batches } = req.body;
+    if (!Array.isArray(batches) || batches.length === 0) {
+      return res.status(400).json({ error: 'Array of batches is required.' });
+    }
+
+    await client.query('BEGIN');
+    const createdBatches: any[] = [];
+    let totalCodesInserted = 0;
+
+    for (const b of batches) {
+      if (!b.batch_number) continue;
+
+      // Resolve product_id
+      let productId = b.product_id;
+      if (!productId && b.product_slug) {
+        const pRes = await client.query('SELECT id FROM products WHERE slug = $1 LIMIT 1', [b.product_slug.toLowerCase().trim()]);
+        if (pRes.rows.length > 0) {
+          productId = pRes.rows[0].id;
+        }
+      }
+      if (!productId) {
+        const pFirst = await client.query('SELECT id FROM products ORDER BY id ASC LIMIT 1');
+        if (pFirst.rows.length > 0) {
+          productId = pFirst.rows[0].id;
+        }
+      }
+
+      const numCodes = Math.min(Math.max(parseInt(b.quantity, 10) || 10, 1), 5000);
+
+      // Insert or update batch
+      const batchRes = await client.query(`
+        INSERT INTO batches (batch_number, product_id, manufacturing_date, expiry_date, total_codes, notes)
+        VALUES ($1, $2, COALESCE($3, CURRENT_DATE), COALESCE($4, CURRENT_DATE + INTERVAL '2 years'), $5, $6)
+        ON CONFLICT (batch_number) DO UPDATE SET
+          total_codes = EXCLUDED.total_codes,
+          notes = COALESCE(EXCLUDED.notes, batches.notes),
+          manufacturing_date = COALESCE(EXCLUDED.manufacturing_date, batches.manufacturing_date),
+          expiry_date = COALESCE(EXCLUDED.expiry_date, batches.expiry_date)
+        RETURNING *;
+      `, [
+        b.batch_number.trim().toUpperCase(),
+        productId,
+        b.manufacturing_date || null,
+        b.expiry_date || null,
+        numCodes,
+        b.notes || null
+      ]);
+
+      const savedBatch = batchRes.rows[0];
+
+      // Security codes
+      let codesToInsert: string[] = [];
+      if (Array.isArray(b.codes) && b.codes.length > 0) {
+        const set = new Set<string>();
+        for (const rawCode of b.codes) {
+          const clean = String(rawCode).trim().toUpperCase();
+          if (clean.length === 6) {
+            set.add(clean);
+          }
+        }
+        codesToInsert = Array.from(set);
+      } else {
+        const set = new Set<string>();
+        while (set.size < numCodes) {
+          set.add(generatePharmaCode());
+        }
+        codesToInsert = Array.from(set);
+      }
+
+      if (codesToInsert.length > 0) {
+        const valuesList: string[] = [];
+        const params: any[] = [];
+        let pIdx = 1;
+        for (const code of codesToInsert) {
+          valuesList.push(`($${pIdx++}, $${pIdx++}, $${pIdx++}, 'ACTIVE')`);
+          params.push(code, savedBatch.id, productId);
+        }
+
+        await client.query(`
+          INSERT INTO product_codes (code, batch_id, product_id, status)
+          VALUES ${valuesList.join(', ')}
+          ON CONFLICT (code) DO NOTHING;
+        `, params);
+
+        totalCodesInserted += codesToInsert.length;
+      }
+
+      createdBatches.push(savedBatch);
+    }
+
+    await client.query('COMMIT');
+
+    return res.status(201).json({
+      message: `Successfully processed ${createdBatches.length} batches and registered security codes in Neon.`,
+      batches: createdBatches,
+      total_codes: totalCodesInserted
+    });
+  } catch (error: any) {
+    await client.query('ROLLBACK');
+    console.error('Error importing batches in bulk:', error);
+    return res.status(500).json({ error: 'Failed to bulk import batches into Neon database.' });
+  } finally {
+    client.release();
+  }
+});
+
+// DELETE /api/batches/:id - Delete batch and associated security codes (Admin)
+batchesRouter.delete('/:id', async (req: Request, res: Response) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+    await client.query('BEGIN');
+
+    await client.query('DELETE FROM verification_logs WHERE code_id IN (SELECT id FROM product_codes WHERE batch_id = $1);', [id]);
+    await client.query('DELETE FROM product_codes WHERE batch_id = $1;', [id]);
+    const resDelete = await client.query('DELETE FROM batches WHERE id = $1 RETURNING id, batch_number;', [id]);
+
+    if (resDelete.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Batch not found.' });
+    }
+
+    await client.query('COMMIT');
+    return res.json({ message: 'Batch deleted successfully.', batch: resDelete.rows[0] });
+  } catch (error: any) {
+    await client.query('ROLLBACK');
+    console.error('Error deleting batch:', error);
+    return res.status(500).json({ error: 'Failed to delete batch.' });
+  } finally {
+    client.release();
+  }
+});
+
