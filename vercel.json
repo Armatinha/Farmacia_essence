@@ -38,22 +38,5 @@
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
-  ],
-  "redirects": [
-    {
-      "source": "http://essencepharmalab.com/(.*)",
-      "destination": "https://essencepharmalab.com/$1",
-      "permanent": true
-    },
-    {
-      "source": "http://www.essencepharmalab.com/(.*)",
-      "destination": "https://essencepharmalab.com/$1",
-      "permanent": true
-    },
-    {
-      "source": "https://www.essencepharmalab.com/(.*)",
-      "destination": "https://essencepharmalab.com/$1",
-      "permanent": true
-    }
   ]
 }
