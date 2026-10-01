@@ -76,14 +76,16 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// Start Server
-app.listen(PORT, async () => {
-  console.log(`====================================================`);
-  console.log(`🚀 Essence Pharma Backend rodando na porta ${PORT}`);
-  console.log(`🔗 Healthcheck: http://localhost:${PORT}/api/health`);
-  console.log(`⚡ Conectando ao Neon PostgreSQL...`);
-  await checkNeonConnection();
-  console.log(`====================================================`);
-});
+// Start Server (only when not running inside Vercel Serverless Function)
+if (!process.env.VERCEL) {
+  app.listen(PORT, async () => {
+    console.log(`====================================================`);
+    console.log(`🚀 Essence Pharma Backend rodando na porta ${PORT}`);
+    console.log(`🔗 Healthcheck: http://localhost:${PORT}/api/health`);
+    console.log(`⚡ Conectando ao Neon PostgreSQL...`);
+    await checkNeonConnection();
+    console.log(`====================================================`);
+  });
+}
 
 export default app;

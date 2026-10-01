@@ -5,10 +5,14 @@ dotenv.config();
 
 const { Pool } = pg;
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = 
+  process.env.DATABASE_URL || 
+  process.env.POSTGRES_URL || 
+  process.env.POSTGRES_PRISMA_URL || 
+  process.env.POSTGRES_URL_NON_POOLING;
 
 if (!connectionString) {
-  console.warn('⚠️ AVISO: DATABASE_URL não definida nas variáveis de ambiente. Verifique o arquivo .env');
+  console.warn('⚠️ AVISO: Nenhuma string de conexão Neon/PostgreSQL encontrada (DATABASE_URL, POSTGRES_URL).');
 }
 
 export const pool = new Pool({

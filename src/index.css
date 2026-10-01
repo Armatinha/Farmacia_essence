@@ -5,34 +5,34 @@
 @theme {
   --color-veltrix-dark-1: #151721;
   --color-veltrix-dark-2: #171923;
-  --color-veltrix-dark-3: #f4f5f6;
+  --color-veltrix-dark-3: #171820;
   --color-veltrix-dark-4: #353741;
 
-  --color-veltrix-light-1: #080a0d;
-  --color-veltrix-light-2: #11151a;
-  --color-veltrix-light-3: #0d1014;
-  --color-veltrix-light-4: #151a20;
-  --color-veltrix-light-5: #f4f5f6;
+  --color-veltrix-light-1: #f8f5ee;
+  --color-veltrix-light-2: #ebe6dc;
+  --color-veltrix-light-3: #fbf9f4;
+  --color-veltrix-light-4: #e9e5dc;
+  --color-veltrix-light-5: #f7f3e9;
 
-  --color-veltrix-gold-1: #c8ccd2;
-  --color-veltrix-gold-2: #eef0f2;
-  --color-veltrix-gold-3: #ffffff;
-  --color-veltrix-gold-4: #9ea5af;
-  --color-veltrix-gold-5: #6e7681;
+  --color-veltrix-gold-1: #b58a34;
+  --color-veltrix-gold-2: #a77e2e;
+  --color-veltrix-gold-3: #c29a48;
+  --color-veltrix-gold-4: #bd984d;
+  --color-veltrix-gold-5: #8b6b2f;
 
-  --color-veltrix-text-dark: #c4c9d0;
-  --color-veltrix-text-darker: #11151a;
-  --color-veltrix-text-gray: #9aa2ad;
-  --color-veltrix-text-light: #f2f4f6;
-  --color-veltrix-text-muted: #8d949e;
+  --color-veltrix-text-dark: #555652;
+  --color-veltrix-text-darker: #2d291f;
+  --color-veltrix-text-gray: #62615c;
+  --color-veltrix-text-light: #eee9dd;
+  --color-veltrix-text-muted: #aaa79f;
 
-  --color-veltrix-border-1: #2a3038;
-  --color-veltrix-border-2: #343b45;
-  --color-veltrix-border-3: #242a32;
+  --color-veltrix-border-1: #d9d2c3;
+  --color-veltrix-border-2: #ddd5c7;
+  --color-veltrix-border-3: #ded7ca;
 
   /* Replacing old primary with Veltrix dark text */
-  --color-primary: #f4f5f6; 
-  --color-secondary: #080a0d;
+  --color-primary: #171820; 
+  --color-secondary: #f8f5ee;
 
   /* Keep feedback colors just in case */
   --color-success: #059669;
