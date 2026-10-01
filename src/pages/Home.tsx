@@ -40,6 +40,10 @@ export default function Home() {
               alt="Essence Labs packaging mockup" 
               className="relative w-full h-[420px] lg:h-[550px] object-cover object-center shadow-[0_35px_80px_rgba(20,20,28,.18)]" 
               src={heroImage}
+              fetchPriority="high"
+              loading="eager"
+              width={800}
+              height={550}
             />
             
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.8 }} className="absolute -bottom-5 -left-5 bg-veltrix-gold-1 p-5 w-40 text-veltrix-dark-3 shadow-lg">
