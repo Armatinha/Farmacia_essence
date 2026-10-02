@@ -23,8 +23,15 @@ import {
   Trash2,
   FileSpreadsheet,
   FileText,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldAlert
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import essenceEmblem from '../assets/essence-emblem-sm.webp';
 
 type TabType = 'telemetry' | 'products' | 'batches';
@@ -79,6 +86,31 @@ interface BatchItem {
 }
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return Boolean(localStorage.getItem('essence_admin_token'));
+  });
+  const [currentUser, setCurrentUser] = useState<{ id?: number; email: string; name: string; role: string } | null>(() => {
+    const saved = localStorage.getItem('essence_admin_user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  // Login Form State
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginSubmitting, setLoginSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<TabType>('telemetry');
   const [loading, setLoading] = useState(false);
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
@@ -492,8 +524,55 @@ export default function AdminDashboard() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail.trim() || !loginPassword.trim()) return;
+
+    setLoginSubmitting(true);
+    setLoginError(null);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail.trim(), password: loginPassword })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        localStorage.setItem('essence_admin_token', data.token);
+        localStorage.setItem('essence_admin_user', JSON.stringify(data.user));
+        setCurrentUser(data.user);
+        setIsAuthenticated(true);
+      } else {
+        setLoginError(data.error || t('adminLogin.errorInvalid'));
+      }
+    } catch (err: any) {
+      console.error('Login network error:', err);
+      setLoginError(t('adminLogin.errorServer'));
+    } finally {
+      setLoginSubmitting(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem('essence_admin_token');
+    if (token) {
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => {});
+    }
+    localStorage.removeItem('essence_admin_token');
+    localStorage.removeItem('essence_admin_user');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+  };
+
   // Tab-based data load (only fetch what is needed when tab changes or on mount)
   useEffect(() => {
+    if (!isAuthenticated) return;
     if (activeTab === 'telemetry') {
       fetchTelemetry();
     } else if (activeTab === 'products') {
@@ -501,7 +580,7 @@ export default function AdminDashboard() {
     } else if (activeTab === 'batches') {
       fetchBatches();
     }
-  }, [activeTab]);
+  }, [activeTab, isAuthenticated]);
 
   const formatDate = (dateStr: string) => {
     try {
@@ -511,6 +590,136 @@ export default function AdminDashboard() {
       return dateStr;
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-veltrix-light-1 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
+        {/* Subtle Ambient Background Gradients */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-veltrix-gold-1/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-veltrix-dark-1/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="w-full max-w-md relative z-10">
+          {/* Card Container */}
+          <div className="bg-white/95 backdrop-blur-xl border border-veltrix-border-2 rounded-2xl p-8 sm:p-10 shadow-2xl shadow-black/5 relative">
+            {/* Top Emblem & Header */}
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="relative mb-4">
+                <img 
+                  src={essenceEmblem} 
+                  alt="Essence Pharma Emblem" 
+                  width={56} 
+                  height={56} 
+                  className="w-14 h-14 rounded-xl object-cover shadow-md border border-veltrix-gold-1/40 p-0.5" 
+                />
+                <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white" title="Secure Channel" />
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-veltrix-dark-1 text-[9px] font-mono uppercase tracking-[.25em] text-veltrix-gold-1 mb-2.5">
+                <ShieldCheck size={12} /> {t('adminLogin.badge')}
+              </div>
+
+              <h1 className="font-display text-2xl font-bold tracking-tight text-veltrix-dark-1">
+                {t('adminLogin.title')}
+              </h1>
+              <p className="text-xs text-veltrix-text-muted mt-2 max-w-xs leading-relaxed">
+                {t('adminLogin.subtitle')}
+              </p>
+            </div>
+
+            {/* Error Notification */}
+            {loginError && (
+              <div className="mb-6 p-3.5 rounded-lg bg-red-50 border border-red-200/80 flex items-start gap-3 text-red-800 text-xs">
+                <ShieldAlert size={16} className="shrink-0 text-red-600 mt-0.5" />
+                <span className="leading-snug">{loginError}</span>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-veltrix-dark-3 mb-1.5">
+                  {t('adminLogin.emailLabel')}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-veltrix-dark-4">
+                    <Mail size={16} />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder={t('adminLogin.emailPlaceholder')}
+                    className="w-full pl-10 pr-4 py-3 bg-veltrix-light-2 border border-veltrix-border-2 rounded-lg text-sm text-veltrix-dark-1 placeholder-veltrix-text-muted/60 focus:outline-none focus:border-veltrix-gold-1 focus:ring-2 focus:ring-veltrix-gold-1/20 transition-all font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-veltrix-dark-3 mb-1.5">
+                  {t('adminLogin.passwordLabel')}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-veltrix-dark-4">
+                    <Lock size={16} />
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder={t('adminLogin.passwordPlaceholder')}
+                    className="w-full pl-10 pr-11 py-3 bg-veltrix-light-2 border border-veltrix-border-2 rounded-lg text-sm text-veltrix-dark-1 placeholder-veltrix-text-muted/60 focus:outline-none focus:border-veltrix-gold-1 focus:ring-2 focus:ring-veltrix-gold-1/20 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-veltrix-text-muted hover:text-veltrix-dark-1 cursor-pointer transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginSubmitting}
+                className="w-full mt-2 py-3.5 px-4 bg-veltrix-dark-1 hover:bg-veltrix-dark-2 text-veltrix-gold-1 font-bold text-xs uppercase tracking-[.2em] rounded-lg border border-veltrix-gold-1/40 hover:border-veltrix-gold-1 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loginSubmitting ? (
+                  <>
+                    <RefreshCw size={14} className="animate-spin" />
+                    {t('adminLogin.submitting')}
+                  </>
+                ) : (
+                  <>
+                    <Lock size={14} />
+                    {t('adminLogin.submitBtn')}
+                    <ArrowRight size={14} />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Security Notice */}
+            <div className="mt-8 pt-6 border-t border-veltrix-border-2/70 text-center">
+              <p className="text-[10px] text-veltrix-text-muted leading-relaxed">
+                {t('adminLogin.securityNotice')}
+              </p>
+              <div className="mt-4">
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-veltrix-gold-4 hover:text-veltrix-gold-3 transition-colors"
+                >
+                  ← {t('adminLogin.returnHome')}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-veltrix-light-1 flex flex-col md:flex-row font-sans">
@@ -602,13 +811,24 @@ export default function AdminDashboard() {
         </nav>
 
         <div className="mt-auto pt-6 border-t border-veltrix-dark-4">
-          <Link 
-            to="/" 
-            aria-label="Exit dashboard and return to home page"
-            className="flex items-center gap-4 px-5 py-4 text-veltrix-text-muted hover:text-red-400 w-full rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors"
+          {currentUser && (
+            <div className="mb-4 p-3 rounded bg-veltrix-dark-2 border border-veltrix-dark-4 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-veltrix-gold-1/20 border border-veltrix-gold-1/40 flex items-center justify-center text-veltrix-gold-1 font-bold text-xs shrink-0">
+                {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-semibold text-veltrix-light-4 truncate">{currentUser.name || 'Security Director'}</div>
+                <div className="text-[10px] text-veltrix-text-muted font-mono truncate">{currentUser.email}</div>
+              </div>
+            </div>
+          )}
+          <button 
+            onClick={handleLogout}
+            aria-label="Sign out from dashboard"
+            className="flex items-center gap-4 px-5 py-4 text-veltrix-text-muted hover:text-red-400 w-full rounded-sm font-bold text-[10px] uppercase tracking-widest transition-colors cursor-pointer"
           >
-            <LogOut size={16} /> Exit Dashboard
-          </Link>
+            <LogOut size={16} /> {t('adminLogin.signOut')}
+          </button>
         </div>
       </aside>
 

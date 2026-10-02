@@ -126,6 +126,23 @@ const resources = {
         verify: "Authenticity Verification",
         hours: "Mon–Fri · 09:00–17:00",
         copyright: "For research purposes only · Not for human consumption"
+      },
+      adminLogin: {
+        badge: "Security Core Console",
+        title: "Enterprise Access",
+        subtitle: "Enter your authorized credentials to access the batch registry and fraud telemetry console.",
+        emailLabel: "Admin Email",
+        emailPlaceholder: "e.g. essence.phama@gmail.com",
+        passwordLabel: "Security Key / Password",
+        passwordPlaceholder: "Enter your password",
+        submitBtn: "Authenticate & Enter",
+        submitting: "Authenticating...",
+        errorInvalid: "Invalid email or password. Please verify your credentials.",
+        errorServer: "Authentication failed. Could not verify credentials with security core.",
+        returnHome: "Return to Public Site",
+        securityNotice: "Authorized Essence Pharma personnel only. All access attempts are cryptographically logged.",
+        signOut: "Sign Out",
+        loggedInAs: "Connected as:"
       }
     }
   },
@@ -253,6 +270,23 @@ const resources = {
         verify: "Verificación de Autenticidad",
         hours: "Lun–Vie · 09:00–17:00",
         copyright: "Solo para fines de investigación · No para consumo humano"
+      },
+      adminLogin: {
+        badge: "Consola de Seguridad Central",
+        title: "Acceso Empresarial",
+        subtitle: "Ingrese sus credenciales autorizadas para acceder al registro de lotes y telemetría de fraude.",
+        emailLabel: "Correo de Administrador",
+        emailPlaceholder: "ej. essence.phama@gmail.com",
+        passwordLabel: "Clave de Seguridad / Contraseña",
+        passwordPlaceholder: "Ingrese su contraseña",
+        submitBtn: "Autenticar e Ingresar",
+        submitting: "Autenticando...",
+        errorInvalid: "Correo o contraseña no válidos. Verifique sus credenciales.",
+        errorServer: "Error de autenticación. No se pudo verificar con el núcleo de seguridad.",
+        returnHome: "Volver al Sitio Público",
+        securityNotice: "Solo para personal autorizado de Essence Pharma. Todos los accesos son registrados criptográficamente.",
+        signOut: "Cerrar Sesión",
+        loggedInAs: "Conectado como:"
       }
     }
   }

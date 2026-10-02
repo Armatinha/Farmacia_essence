@@ -9,6 +9,7 @@
     "server:dev": "tsx watch server/src/index.ts",
     "db:seed": "tsx server/src/seed.ts",
     "convert:webp": "tsx scripts/convert-to-webp.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
     "dev:all": "concurrently -n \"frontend,backend\" -c \"cyan,magenta\" \"npm run dev\" \"npm run server:dev\"",
     "build": "tsc -b && vite build",
     "lint": "oxlint",

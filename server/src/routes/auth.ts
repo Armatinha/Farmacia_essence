@@ -9,6 +9,15 @@ function hashPassword(password: string): string {
   return crypto.createHash('sha256').update(password + (process.env.JWT_SECRET || 'secret-salt')).digest('hex');
 }
 
+interface SessionUser {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+}
+
+const activeSessions = new Map<string, SessionUser>();
+
 // POST /api/auth/login
 authRouter.post('/login', async (req: Request, res: Response) => {
   try {
@@ -25,14 +34,16 @@ authRouter.post('/login', async (req: Request, res: Response) => {
       // Demo fallback check for convenience
       if ((email === 'admin@essencepharma.com' || email === 'admin@oxygenpharma.com') && password === 'admin123') {
         const token = crypto.randomBytes(32).toString('hex');
+        const demoUser: SessionUser = {
+          id: 1,
+          email: 'admin@essencepharma.com',
+          name: 'Essence Administrator',
+          role: 'admin'
+        };
+        activeSessions.set(token, demoUser);
         return res.json({
           token,
-          user: {
-            id: 1,
-            email: 'admin@essencepharma.com',
-            name: 'Essence Administrator',
-            role: 'admin'
-          }
+          user: demoUser
         });
       }
       return res.status(401).json({ error: 'Invalid credentials.' });
@@ -49,15 +60,18 @@ authRouter.post('/login', async (req: Request, res: Response) => {
     }
 
     const token = crypto.randomBytes(32).toString('hex');
+    const sessionUser: SessionUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name || 'Security Administrator',
+      role: user.role || 'admin'
+    };
+
+    activeSessions.set(token, sessionUser);
 
     return res.json({
       token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      }
+      user: sessionUser
     });
   } catch (error: any) {
     console.error('Error during admin login:', error);
@@ -65,17 +79,36 @@ authRouter.post('/login', async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/auth/logout
+authRouter.post('/logout', async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+    if (token) {
+      activeSessions.delete(token);
+    }
+    return res.json({ success: true });
+  } catch (_error: any) {
+    return res.status(500).json({ error: 'Failed to terminate session.' });
+  }
+});
+
 // GET /api/auth/me
 authRouter.get('/me', async (req: Request, res: Response) => {
   try {
-    return res.json({
-      authenticated: true,
-      user: {
-        id: 1,
-        email: 'admin@essencepharma.com',
-        name: 'Chief Security Administrator',
-        role: 'admin'
-      }
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+    if (token && activeSessions.has(token)) {
+      return res.json({
+        authenticated: true,
+        user: activeSessions.get(token)
+      });
+    }
+
+    return res.status(401).json({
+      authenticated: false,
+      error: 'Active session not found or expired.'
     });
   } catch (_error: any) {
     return res.status(500).json({ error: 'Failed to validate session.' });
