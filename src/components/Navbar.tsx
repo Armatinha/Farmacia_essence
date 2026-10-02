@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ShieldCheck, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import essenceEmblem from '../assets/essence-emblem-sm.webp';
+const essenceEmblem = '/essence-emblem-sm.webp';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

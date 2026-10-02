@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ShieldCheck, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import essenceEmblem from '../assets/essence-emblem-sm.webp';
+const essenceEmblem = '/essence-emblem-sm.webp';
 
 export default function Footer() {
   const { t } = useTranslation();

@@ -31,6 +31,25 @@ export default defineConfig({
     }
   },
   build: {
-    chunkSizeWarningLimit: 600
+    chunkSizeWarningLimit: 800,
+    target: 'es2020',
+    cssMinify: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('react-router')) {
+              return 'vendor-router';
+            }
+            if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
+              return 'vendor-react';
+            }
+          }
+        }
+      }
+    }
   }
 })

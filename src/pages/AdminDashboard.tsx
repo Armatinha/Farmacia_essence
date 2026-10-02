@@ -32,7 +32,8 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import essenceEmblem from '../assets/essence-emblem-sm.webp';
+import '../i18n';
+const essenceEmblem = '/essence-emblem-sm.webp';
 
 type TabType = 'telemetry' | 'products' | 'batches';
 
@@ -112,7 +113,7 @@ export default function AdminDashboard() {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<TabType>('telemetry');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
 
   // Telemetry state
@@ -952,7 +953,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto min-h-[520px]">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="border-b border-veltrix-border-2 text-[9px] uppercase tracking-widest text-veltrix-text-dark bg-veltrix-light-4">
@@ -964,7 +965,27 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-sm font-mono">
-                    {logs.length === 0 ? (
+                    {loading && logs.length === 0 ? (
+                      Array.from({ length: 8 }).map((_, idx) => (
+                        <tr key={`skeleton-${idx}`} className="border-b border-veltrix-border-1 animate-pulse">
+                          <td className="px-8 py-5">
+                            <div className="h-4 bg-veltrix-border-2/70 rounded w-28" />
+                          </td>
+                          <td className="px-8 py-5">
+                            <div className="h-4 bg-veltrix-border-2/70 rounded w-20" />
+                          </td>
+                          <td className="px-8 py-5">
+                            <div className="h-6 bg-veltrix-border-2/70 rounded w-28" />
+                          </td>
+                          <td className="px-8 py-5">
+                            <div className="h-4 bg-veltrix-border-2/70 rounded w-36" />
+                          </td>
+                          <td className="px-8 py-5">
+                            <div className="h-4 bg-veltrix-border-2/70 rounded w-24" />
+                          </td>
+                        </tr>
+                      ))
+                    ) : logs.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="px-8 py-10 text-center text-veltrix-text-muted">
                           No records found in the registry.
@@ -1075,7 +1096,7 @@ export default function AdminDashboard() {
               <div className="px-8 py-6 border-b border-veltrix-border-2 bg-veltrix-light-2">
                 <h3 className="font-display text-2xl tracking-tight text-veltrix-dark-3">Registered Production Batches</h3>
               </div>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto min-h-[400px]">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
                     <tr className="border-b border-veltrix-border-2 text-[9px] uppercase tracking-widest text-veltrix-text-gray bg-veltrix-light-4">
@@ -1089,7 +1110,26 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-sm font-mono">
-                    {batches.map((b) => (
+                    {loading && batches.length === 0 ? (
+                      Array.from({ length: 6 }).map((_, idx) => (
+                        <tr key={`batch-skeleton-${idx}`} className="border-b border-veltrix-border-1 animate-pulse">
+                          <td className="px-8 py-5"><div className="h-4 bg-veltrix-border-2/70 rounded w-24" /></td>
+                          <td className="px-8 py-5"><div className="h-4 bg-veltrix-border-2/70 rounded w-36" /></td>
+                          <td className="px-8 py-5"><div className="h-4 bg-veltrix-border-2/70 rounded w-16" /></td>
+                          <td className="px-8 py-5"><div className="h-4 bg-veltrix-border-2/70 rounded w-12" /></td>
+                          <td className="px-8 py-5"><div className="h-4 bg-veltrix-border-2/70 rounded w-16" /></td>
+                          <td className="px-8 py-5"><div className="h-4 bg-veltrix-border-2/70 rounded w-20" /></td>
+                          <td className="px-8 py-5"><div className="h-6 bg-veltrix-border-2/70 rounded w-24" /></td>
+                        </tr>
+                      ))
+                    ) : batches.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-8 py-10 text-center text-veltrix-text-muted">
+                          No batches registered.
+                        </td>
+                      </tr>
+                    ) : (
+                      batches.map((b) => (
                       <tr key={b.id} className="border-b border-veltrix-border-1 hover:bg-veltrix-light-4/50 transition-colors">
                         <td className="px-8 py-5 text-veltrix-dark-3 font-bold tracking-wider text-xs">
                           {b.batch_number}
@@ -1131,7 +1171,7 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    )))}
                   </tbody>
                 </table>
               </div>

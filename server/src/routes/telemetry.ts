@@ -6,55 +6,51 @@ export const telemetryRouter = Router();
 // GET /api/telemetry/metrics - Dashboard Summary Cards
 telemetryRouter.get('/metrics', async (req: Request, res: Response) => {
   try {
-    // 1. Total Verifications
-    const totalVerifRes = await query('SELECT COUNT(*) as count FROM verification_logs;');
-    const totalVerifications = parseInt(totalVerifRes.rows[0]?.count || '0', 10);
+    // Edge cache for 30s, stale-while-revalidate for 2 minutes to serve Lighthouse/users instantly (<25ms)
+    res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
 
-    // 2. Fraud Alerts (codes checked multiple times or revoked)
-    const fraudAlertsRes = await query(
-      "SELECT COUNT(*) as count FROM verification_logs WHERE status_result IN ('WARNING_MULTIPLE_USE', 'REVOKED');"
-    );
-    const fraudAlerts = parseInt(fraudAlertsRes.rows[0]?.count || '0', 10);
+    // Execute consolidated queries concurrently in parallel
+    const [metricsRes, batchesRes, actualCodesRes, breakdownRes] = await Promise.all([
+      query(`
+        SELECT 
+          COUNT(*) as total_verifications,
+          COUNT(CASE WHEN status_result IN ('WARNING_MULTIPLE_USE', 'REVOKED') THEN 1 END) as fraud_alerts,
+          COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as this_week,
+          COUNT(CASE WHEN created_at >= NOW() - INTERVAL '14 days' AND created_at < NOW() - INTERVAL '7 days' THEN 1 END) as last_week
+        FROM verification_logs;
+      `),
+      query(`
+        SELECT 
+          COUNT(CASE WHEN active = true THEN 1 END) as active_batches,
+          COALESCE(SUM(total_codes), 0) as total_codes
+        FROM batches;
+      `),
+      query('SELECT COUNT(*) as count FROM product_codes;'),
+      query(`
+        SELECT status_result, COUNT(*) as count
+        FROM verification_logs
+        GROUP BY status_result;
+      `)
+    ]);
 
-    // 3. Active Batches & Total Codes
-    const batchesRes = await query(`
-      SELECT 
-        COUNT(CASE WHEN active = true THEN 1 END) as active_batches,
-        COALESCE(SUM(total_codes), 0) as total_codes
-      FROM batches;
-    `);
-    const activeBatches = parseInt(batchesRes.rows[0]?.active_batches || '0', 10);
-    const totalCodesInBatches = parseInt(batchesRes.rows[0]?.total_codes || '0', 10);
+    const m = metricsRes.rows[0] || {};
+    const totalVerifications = parseInt(m.total_verifications || '0', 10);
+    const fraudAlerts = parseInt(m.fraud_alerts || '0', 10);
+    const thisWeek = parseInt(m.this_week || '0', 10);
+    const lastWeek = parseInt(m.last_week || '0', 10);
 
-    // Actual codes in table
-    const actualCodesRes = await query('SELECT COUNT(*) as count FROM product_codes;');
-    const totalCodes = Math.max(
-      totalCodesInBatches,
-      parseInt(actualCodesRes.rows[0]?.count || '0', 10)
-    );
-
-    // 4. This week vs previous week verifications
-    const weeklyRes = await query(`
-      SELECT 
-        COUNT(CASE WHEN created_at >= NOW() - INTERVAL '7 days' THEN 1 END) as this_week,
-        COUNT(CASE WHEN created_at >= NOW() - INTERVAL '14 days' AND created_at < NOW() - INTERVAL '7 days' THEN 1 END) as last_week
-      FROM verification_logs;
-    `);
-
-    const thisWeek = parseInt(weeklyRes.rows[0]?.this_week || '0', 10);
-    const lastWeek = parseInt(weeklyRes.rows[0]?.last_week || '0', 10);
     let growthRate = '+12% THIS WEEK';
     if (lastWeek > 0) {
       const diff = ((thisWeek - lastWeek) / lastWeek) * 100;
       growthRate = `${diff >= 0 ? '+' : ''}${Math.round(diff)}% THIS WEEK`;
     }
 
-    // 5. Breakdown by status
-    const breakdownRes = await query(`
-      SELECT status_result, COUNT(*) as count
-      FROM verification_logs
-      GROUP BY status_result;
-    `);
+    const activeBatches = parseInt(batchesRes.rows[0]?.active_batches || '0', 10);
+    const totalCodesInBatches = parseInt(batchesRes.rows[0]?.total_codes || '0', 10);
+    const totalCodes = Math.max(
+      totalCodesInBatches,
+      parseInt(actualCodesRes.rows[0]?.count || '0', 10)
+    );
 
     return res.json({
       total_verifications: totalVerifications,
@@ -73,6 +69,9 @@ telemetryRouter.get('/metrics', async (req: Request, res: Response) => {
 // GET /api/telemetry/logs - Real-time Verifications Table
 telemetryRouter.get('/logs', async (req: Request, res: Response) => {
   try {
+    // Edge cache for 15s, stale-while-revalidate for 60s
+    res.setHeader('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=60');
+
     const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
     const offset = parseInt(req.query.offset as string) || 0;
     const status = req.query.status as string;
@@ -115,12 +114,14 @@ telemetryRouter.get('/logs', async (req: Request, res: Response) => {
 
     params.push(limit, offset);
 
-    const logsResult = await query(sql, params);
-
-    const countResult = await query(
-      `SELECT COUNT(*) as total FROM verification_logs v ${whereClause};`,
-      params.slice(0, paramIdx - 3)
-    );
+    // Run query and total count in parallel
+    const [logsResult, countResult] = await Promise.all([
+      query(sql, params),
+      query(
+        `SELECT COUNT(*) as total FROM verification_logs v ${whereClause};`,
+        params.slice(0, paramIdx - 3)
+      )
+    ]);
 
     return res.json({
       total: parseInt(countResult.rows[0]?.total || '0', 10),

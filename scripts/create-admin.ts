@@ -23,7 +23,7 @@ const pool = new Pool({
 });
 
 function hashPassword(password: string): string {
-  const salt = process.env.JWT_SECRET || 'secret-salt';
+  const salt = process.env.JWT_SECRET || 'oxygen-pharma-ultra-secure-secret-2026-key';
   return crypto.createHash('sha256').update(password + salt).digest('hex');
 }
 

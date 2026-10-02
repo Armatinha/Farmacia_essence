@@ -61,31 +61,29 @@
       body { background-color: #f8f5ee; color: #171820; margin: 0; }
     </style>
 
-    <!-- ─── Google Fonts — async non-blocking load ─── -->
+    <!-- ─── Google Fonts ─── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
     />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
   </head>
   <body>
     <div id="root">
-      <div style="min-height:100vh;background-color:#f8f5ee;color:#171820;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:system-ui,-apple-system,sans-serif;text-align:center;padding:24px;">
-        <div style="width:48px;height:48px;background:#171820;border:1px solid #b58a34;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
-          <span style="color:#b58a34;font-size:24px;font-weight:700;line-height:1;">E</span>
+      <div style="min-height:100vh;background-color:#f8f5ee;color:#171820;position:relative;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid rgba(181,138,52,0.15);">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;background:#171820;border:1px solid #b58a34;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#b58a34;font-size:18px;font-weight:700;line-height:1;">E</span>
+            </div>
+            <div>
+              <div style="font-size:15px;font-weight:700;letter-spacing:0.18em;color:#171820;line-height:1;">ESSENCE</div>
+              <div style="font-size:8px;font-weight:600;letter-spacing:0.3em;color:#855f19;text-transform:uppercase;margin-top:2px;">PHARMA</div>
+            </div>
+          </div>
+          <div style="width:20px;height:20px;border:2px solid #b58a34;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
         </div>
-        <div style="font-size:22px;font-weight:700;letter-spacing:0.18em;color:#171820;margin-bottom:4px;">ESSENCE</div>
-        <div style="font-size:10px;font-weight:600;letter-spacing:0.3em;color:#855f19;text-transform:uppercase;margin-bottom:24px;">PHARMA</div>
-        <div style="width:28px;height:28px;border:2px solid #b58a34;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
       </div>
       <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
     </div>
